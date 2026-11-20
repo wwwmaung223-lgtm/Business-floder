@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Northstar Business OS · V0.7</title>
+<style>
+:root{color-scheme:light;--bg:#f4f5f7;--surface:#fff;--surface2:#f8f8fa;--ink:#20212a;--muted:#858895;--line:#ececf0;--accent:#f06455;--accent-soft:#fff0ed;--sidebar:#171923;--side-ink:#d5d6df;--good:#15966a;--warn:#fff7e6;--shadow:0 8px 28px rgba(28,30,40,.045)}
+:root[data-theme=dark]{color-scheme:dark;--bg:#11131b;--surface:#191c27;--surface2:#202330;--ink:#f1f2f6;--muted:#9da1af;--line:#2c3040;--accent:#ff796b;--accent-soft:#392725;--sidebar:#0c0e15;--side-ink:#d5d6df;--good:#5bd3a0;--warn:#302a1b;--shadow:0 12px 35px rgba(0,0,0,.2)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:11px 15px;background:var(--accent);color:white;font-weight:700}button:hover{filter:brightness(1.06)}button:disabled{opacity:.45;cursor:not-allowed}.hidden{display:none!important}
+.auth{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;background:var(--surface)}.auth-brand{padding:clamp(28px,6vw,82px);background:radial-gradient(circle at 20% 15%,#6b5de955,transparent 34%),linear-gradient(145deg,#141a2b,#25224b);color:#fff;display:flex;flex-direction:column;justify-content:space-between}.logo{font-weight:900;letter-spacing:.7px;font-size:18px}.logo span{color:#a99fff}.brand-copy{max-width:570px}.brand-copy h1{font-size:clamp(34px,5vw,64px);line-height:1.04;letter-spacing:-2px;margin:0 0 18px}.brand-copy p{color:#c5c9dc;font-size:16px;max-width:470px}.brand-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:25px}.brand-pills span{border:1px solid #ffffff2c;background:#ffffff12;border-radius:99px;padding:7px 11px;font-size:12px}.auth-foot{font-size:12px;color:#9ea7c1}.auth-form-wrap{display:grid;place-items:center;padding:28px}.auth-card{width:min(430px,100%)}.auth-card h2{font-size:27px;letter-spacing:-.7px;margin:0 0 5px}.muted{color:var(--muted)}.tabs{display:flex;gap:6px;background:var(--surface2);border:1px solid var(--line);padding:5px;border-radius:13px;margin:24px 0}.tabs button{flex:1;background:transparent;color:var(--muted)}.tabs button.active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}.field{display:grid;gap:6px;margin:13px 0}.field label{font-size:12px;font-weight:700;color:var(--muted)}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--surface2);color:var(--ink);padding:12px 13px;outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}.full{width:100%}.auth-note{font-size:11px;line-height:1.5;margin-top:16px;padding:11px;border-radius:10px;background:var(--warn);color:var(--muted)}
+.app{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}.sidebar{height:100vh;position:sticky;top:0;background:var(--sidebar);color:#fff;padding:22px 15px;display:flex;flex-direction:column;gap:24px;z-index:5}.sidebar .logo{padding:0 10px}.sidebar .logo small{display:block;color:#929db6;font-size:9px;letter-spacing:1.7px;margin-top:3px}.nav{display:grid;gap:5px}.nav button{background:transparent;color:var(--side-ink);text-align:left;padding:10px 12px;font-size:13px;font-weight:600}.nav button.active,.nav button:hover{background:#2a3046;color:white}.sidebar-bottom{margin-top:auto;color:#929db6;font-size:11px;padding:8px 10px}.main{max-width:1550px;width:100%;margin:auto;padding:28px clamp(16px,3vw,44px) 50px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:24px}.eyebrow{font-size:10px;font-weight:850;letter-spacing:1.8px;color:var(--accent)}.page-title{font-size:29px;letter-spacing:-.9px;font-weight:850;margin:3px 0}.page-sub{color:var(--muted);font-size:13px}.top-actions{display:flex;align-items:center;gap:8px}.iconbtn,.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800}.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}.card,.panel{background:var(--surface);border:1px solid var(--line);border-radius:17px;padding:18px;box-shadow:var(--shadow)}.metric-label{color:var(--muted);font-size:12px;font-weight:650}.metric{font-size:27px;font-weight:850;letter-spacing:-.7px;margin:5px 0}.metric-foot{font-size:11px;color:var(--good)}.two-col{display:grid;grid-template-columns:1.25fr .9fr;gap:15px}.panel h3{font-size:15px;margin:0 0 14px}.quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.quick button{background:var(--accent-soft);color:var(--ink);text-align:left;padding:13px;min-height:76px}.quick b{display:block;font-size:12px}.quick small{color:var(--muted);font-weight:500}.section{display:none}.section.active{display:block}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:25px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.pill{border-radius:99px;background:var(--accent-soft);color:var(--accent);font-size:10px;padding:4px 9px;font-weight:750}.notice{background:var(--warn);border:1px solid var(--line);padding:12px 14px;border-radius:12px;color:var(--muted);font-size:12px;margin:14px 0}.content-list{display:grid;gap:8px}.listrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.listrow:last-child{border:0}.small{font-size:11px;color:var(--muted)}.owner-locked{padding:25px;border:1px dashed var(--line);border-radius:15px;text-align:center}
+@media(max-width:1000px){.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
+@media(max-width:720px){.auth{grid-template-columns:1fr}.auth-brand{min-height:255px;padding:25px}.brand-copy h1{font-size:34px}.brand-copy p{font-size:13px}.brand-pills{margin-top:12px}.auth-foot{display:none}.auth-form-wrap{padding:25px 20px 40px}.app{grid-template-columns:1fr}.sidebar{height:auto;min-height:0;position:sticky;top:0;padding:11px 10px 8px;gap:9px}.sidebar .logo{font-size:15px;padding:0 5px}.sidebar .logo small{font-size:8px}.nav{display:flex;overflow-x:auto;scrollbar-width:none;gap:4px}.nav::-webkit-scrollbar{display:none}.nav button{flex:0 0 auto;white-space:nowrap;padding:8px 10px;font-size:11px}.sidebar-bottom{display:none}.main{padding:18px 13px 35px}.topbar{align-items:flex-start;flex-direction:column;margin-bottom:16px}.top-actions{width:100%}.top-actions button{flex:1}.page-title{font-size:25px}.grid4{gap:8px;margin:13px 0}.card{padding:13px;border-radius:14px}.metric{font-size:21px}.panel{padding:15px;border-radius:15px}.quick{grid-template-columns:repeat(2,minmax(0,1fr))}.formgrid{grid-template-columns:1fr}}
+
+.logo{cursor:pointer;user-select:none}.logo:active{transform:scale(.985)}
+.sidebar{box-shadow:8px 0 30px rgba(14,16,24,.035)}
+.nav button{border-radius:10px;transition:background .18s ease,transform .18s ease}
+.nav button.active,.nav button:hover{background:#292c38;color:#fff}
+.card,.panel{border-radius:18px;transition:transform .18s ease,box-shadow .18s ease}
+.card:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(28,30,40,.075)}
+button{transition:filter .16s ease,transform .16s ease}button:active{transform:scale(.985)}
+.metric{letter-spacing:-1px}
+.quick button{border:1px solid transparent;border-radius:14px;transition:all .18s ease}
+.quick button:hover{border-color:color-mix(in srgb,var(--accent) 28%,transparent);transform:translateY(-2px)}
+.modal-backdrop{position:fixed;inset:0;background:rgba(10,12,18,.68);backdrop-filter:blur(9px);z-index:50;display:grid;place-items:center;padding:18px}
+.modal-card{width:min(440px,100%);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.28)}
+.modal-card h2{margin:5px 0 4px;font-size:23px;letter-spacing:-.7px}
+.modal-close{float:right;background:var(--surface2);color:var(--muted);border:1px solid var(--line);padding:7px 11px}
+.admin-mark{width:42px;height:42px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:20px;margin-bottom:14px}
+.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+.admin-tile{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--surface2)}
+.admin-tile b{display:block;font-size:13px}.admin-tile span{font-size:11px;color:var(--muted)}
+@media(max-width:720px){.modal-card{padding:20px}.admin-grid{grid-template-columns:1fr 1fr}}
+
+</style>
+</head>
+<body>
+<div id="auth" class="auth">
+ <section class="auth-brand">
+  <div class="logo" title="Northstar" onclick="handleBrandTap()">✦ NORTHSTAR <span>BUSINESS OS</span></div>
+  <div class="brand-copy"><div class="eyebrow" style="color:#b7afff">ONE WORKSPACE. MANY POSSIBILITIES.</div><h1>Build your business, not busywork.</h1><p>One clear workspace for products, customers, marketing, orders and business insights — designed for phone and laptop.</p><div class="brand-pills"><span>✦ AI-ready workflows</span><span>◈ Store & services</span><span>◎ Marketing</span><span>↗ Business insights</span></div></div>
+  <div class="auth-foot">A simple workspace for ambitious small businesses.</div>
+ </section>
+ <section class="auth-form-wrap"><div class="auth-card">
+  <div class="eyebrow">WELCOME TO YOUR WORKSPACE</div><h2 id="authTitle">Create your account</h2><div class="muted" id="authSubtitle">Start with a free local demo workspace.</div>
+  <div class="tabs"><button id="signupTab" class="active" onclick="setAuthMode('signup')">Create account</button><button id="loginTab" onclick="setAuthMode('login')">Sign in</button></div>
+  <form id="authForm">
+   <div class="field" id="nameField"><label>Your name / Business name</label><input id="authName" required placeholder="e.g. Aung's Studio"></div>
+   <div class="field"><label>Email address</label><input id="authEmail" type="email" required placeholder="you@example.com" autocomplete="email"></div>
+   <div class="field"><label>Password</label><input id="authPassword" type="password" minlength="6" required placeholder="At least 6 characters" autocomplete="new-password"></div>
+   <button class="full" id="authSubmit">Create free account</button>
+  </form>
+  <div class="auth-note">Authentication uses Supabase. Business records sync to your private Supabase database. Marketing drafts and OCR notes are kept on this device in this version.</div>
+  <div id="authError" class="small" style="color:#d65b5b;margin-top:10px"></div>
+ </div></section>
+</div>
+<div id="app" class="app hidden">
+ <aside class="sidebar">
+  <div class="logo" title="Northstar" onclick="handleBrandTap()">✦ NORTHSTAR <small>BUSINESS OS</small></div>
+  <nav class="nav" id="nav">
+   <button class="active" data-page="dashboard">⌂ &nbsp; Overview</button>
+   <button data-page="products">▣ &nbsp; Products</button>
+   <button data-page="orders">⇄ &nbsp; Orders</button>
+   <button data-page="customers">♙ &nbsp; Customers</button>
+   <button data-page="marketing">◎ &nbsp; Marketing</button>
+   <button data-page="finance">▤ &nbsp; Finance</button>
+   <button data-page="tools">✧ &nbsp; AI & OCR</button>
+  </nav>
+  <div class="sidebar-bottom">Supabase-connected workspace · v1.0<br><span id="sidebarUser">Local demo</span></div>
+ </aside>
+ <main class="main">
+  <header class="topbar"><div><div class="eyebrow">YOUR BUSINESS COMMAND CENTER</div><div class="page-title" id="pageTitle">Overview</div><div class="page-sub" id="pageSub">A clear view of what's happening in your business.</div></div><div class="top-actions"><button class="secondary" id="themeBtn" onclick="toggleTheme()">☾ Dark</button><button class="secondary" onclick="exportData()">↓ Backup</button><button class="avatar" id="avatar" title="Profile" onclick="showPage('dashboard')">U</button><button class="secondary" onclick="logout()">Sign out</button></div></header>
+  <section class="section active" id="dashboard">
+   <div class="grid4">
+    <div class="card"><div class="metric-label">Paid revenue · MMK</div><div class="metric" id="metricSales">0</div><div class="metric-foot">Recorded paid orders</div></div>
+    <div class="card"><div class="metric-label">Orders</div><div class="metric" id="metricOrders">0</div><div class="metric-foot">All recorded orders</div></div>
+    <div class="card"><div class="metric-label">Customers</div><div class="metric" id="metricCustomers">0</div><div class="metric-foot">Saved contacts</div></div>
+    <div class="card"><div class="metric-label">Products & services</div><div class="metric" id="metricProducts">0</div><div class="metric-foot">Your catalog</div></div>
+   </div>
+   <div class="two-col"><div class="panel"><h3>Quick actions</h3><div class="quick">
+    <button onclick="showPage('products')"><b>＋ Add product</b><small>Build your catalog</small></button><button onclick="showPage('orders')"><b>＋ New order</b><small>Record a sale</small></button><button onclick="showPage('customers')"><b>＋ Add customer</b><small>Save a contact</small></button><button onclick="showPage('marketing')"><b>✎ Content brief</b><small>Plan a campaign</small></button><button onclick="showPage('tools')"><b>▧ Image & OCR</b><small>Upload a photo</small></button><button onclick="showPage('finance')"><b>＋ Expense</b><small>Track costs</small></button>
+   </div></div><div class="panel"><h3>Recent orders</h3><div id="recentOrders" class="content-list"><div class="empty">No orders yet</div></div></div></div>
+   <div class="notice">Your business records sync to your private Supabase workspace. Marketing drafts and OCR notes remain device-local in this version.</div><div class="small" id="cloudStatus" role="status" style="margin-top:8px">Connecting to cloud database…</div>
+  </section>
+  <section class="section" id="products"><div class="panel"><h3>Product & service catalog</h3><form id="productForm"><div class="formgrid"><div class="field"><label>Name</label><input id="pname" required placeholder="Product or service name"></div><div class="field"><label>Type</label><select id="ptype"><option>Digital product</option><option>Physical product</option><option>Service</option><option>Course</option></select></div><div class="field"><label>Price (MMK)</label><input id="pprice" type="number" min="0" required></div><div class="field"><label>Description</label><input id="pdesc" placeholder="Short value proposition"></div></div><button>Add product</button></form><div class="tablewrap"><table><thead><tr><th>Name</th><th>Type</th><th>Price · MMK</th><th></th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
+  <section class="section" id="orders"><div class="panel"><h3>Record a new order</h3><form id="orderForm"><div class="formgrid"><div class="field"><label>Customer name</label><input id="ocustomer" required></div><div class="field"><label>Product / service</label><select id="oproduct" required></select></div><div class="field"><label>Amount · MMK</label><input id="oamount" type="number" min="0" required></div><div class="field"><label>Payment status</label><select id="ostatus"><option>Pending</option><option>Paid</option><option>Cancelled</option></select></div></div><button>Create order</button></form><div class="tablewrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Item</th><th>Amount</th><th>Status</th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
+  <section class="section" id="customers"><div class="panel"><h3>Customer directory</h3><form id="customerForm"><div class="formgrid"><div class="field"><label>Name</label><input id="cname" required></div><div class="field"><label>Email / phone / social handle</label><input id="ccontact"></div></div><button>Add customer</button></form><div class="tablewrap"><table><thead><tr><th>Name</th><th>Contact</th><th>Added</th></tr></thead><tbody id="customerRows"></tbody></table></div></div></section>
+  <section class="section" id="marketing"><div class="panel"><h3>Marketing brief builder</h3><div class="field"><label>Product / service</label><input id="mproduct" placeholder="What are you promoting?"></div><div class="field"><label>Target audience</label><input id="maudience" placeholder="Who needs it?"></div><div class="formgrid"><div class="field"><label>Platform</label><select id="mplatform"><option>Facebook</option><option>TikTok</option><option>Instagram</option><option>LinkedIn</option><option>Email</option></select></div><div class="field"><label>Campaign goal</label><select id="mgoal"><option>Awareness</option><option>Engagement</option><option>Sales</option><option>Leads</option></select></div></div><button onclick="makeBrief()">Generate brief</button><div class="field"><label>Campaign brief · Burmese + English ready</label><textarea id="mdraft" rows="9" placeholder="Your campaign brief will appear here..."></textarea></div><button class="secondary" onclick="copyBrief()">Copy brief</button><p class="small">This creates a structured brief, not AI-generated claims or testimonials.</p></div></section>
+  <section class="section" id="finance"><div class="panel"><h3>Finance tracker</h3><div class="formgrid"><div class="field"><label>Expense description</label><input id="edesc" placeholder="Internet, tools, delivery..."></div><div class="field"><label>Amount · MMK</label><input id="eamount" type="number" min="0"></div></div><button onclick="addExpense()">Add expense</button><div class="grid4"><div class="card"><div class="metric-label">Paid revenue</div><div class="metric" id="rev">0</div></div><div class="card"><div class="metric-label">Expenses</div><div class="metric" id="exp">0</div></div><div class="card"><div class="metric-label">Net recorded</div><div class="metric" id="net">0</div></div></div><div class="tablewrap"><table><thead><tr><th>Expense</th><th>Amount · MMK</th></tr></thead><tbody id="expenseRows"></tbody></table></div></div></section>
+  <section class="section" id="tools"><div class="panel"><h3>Photo OCR · ဓာတ်ပုံမှ စာသားဖတ်ရန်</h3><div class="notice">Choose a receipt, document or product photo. OCR runs in your browser using Tesseract.js. English and Myanmar are supported; accuracy depends on image quality and handwriting may not read correctly.</div><div class="field"><label>Choose image / ဓာတ်ပုံရွေးပါ</label><input type="file" id="imageInput" accept="image/*"></div><div class="row"><button type="button" id="runOcrBtn" onclick="runOCR()">✧ Extract text / စာသားဖတ်မယ်</button><select id="ocrLang" aria-label="OCR language"><option value="eng+mya">English + Myanmar</option><option value="eng">English only</option><option value="mya">Myanmar only</option></select><button type="button" class="secondary" id="uploadImageBtn" onclick="uploadImage()">Upload to cloud</button><span id="uploadStatus" class="small">Sign in to upload.</span></div><div id="ocrProgress" class="small" role="status" style="margin:10px 0"></div><img id="preview" style="display:none;max-width:100%;max-height:340px;border-radius:14px;margin-top:12px"><div class="field" style="margin-top:14px"><label>Extracted text / ရရှိလာသောစာသား</label><textarea id="ocrtext" rows="7" placeholder="OCR text will appear here. You can edit it before saving..."></textarea></div><div class="row"><button onclick="saveNote()">Save note / မှတ်တမ်းသိမ်းမယ်</button><button class="secondary" type="button" onclick="copyOCRText()">Copy text</button></div><div id="savedNotes" class="content-list" style="margin-top:12px"></div></div></section>
+  <section class="section" id="owner">
+    <div class="panel">
+     <div class="eyebrow">OWNER ONLY · PRIVATE CONTROL CENTER</div><h3>Platform overview</h3>
+     <div class="notice">Signed in as an authorized owner. This panel shows records accessible to this account under the current Supabase Row Level Security rules.</div>
+     <div class="grid4 admin-grid">
+      <div class="admin-tile"><b id="adminProducts">0</b><span>Products</span></div>
+      <div class="admin-tile"><b id="adminCustomers">0</b><span>Customers</span></div>
+      <div class="admin-tile"><b id="adminOrders">0</b><span>Orders</span></div>
+      <div class="admin-tile"><b id="adminFinance">0</b><span>Finance records</span></div>
+     </div>
+     <div class="admin-grid">
+      <div class="admin-tile"><b>Account</b><span id="adminAccount">—</span></div>
+      <div class="admin-tile"><b>Access role</b><span id="adminRole">—</span></div>
+      <div class="admin-tile"><b>Database</b><span id="adminDbStatus">Checking…</span></div>
+      <div class="admin-tile"><b>Storage</b><span>User Uploads bucket</span></div>
+     </div>
+     <div class="row" style="margin-top:18px;flex-wrap:wrap">
+      <button type="button" onclick="refreshAdminPanel()">↻ Refresh overview</button>
+      <button type="button" class="secondary" onclick="exportData()">↓ Export workspace backup</button>
+      <button type="button" class="secondary" onclick="showPage('dashboard')">Back to workspace</button>
+      <button type="button" class="secondary" onclick="logout()">Sign out</button>
+     </div>
+     <p class="small" id="adminPanelStatus" role="status" style="margin-top:12px"></p>
+     <div class="notice" style="margin-top:16px"><b>Security note:</b> User-wide administration, role changes and cross-user data access require a trusted server-side Edge Function with strict authorization. They are intentionally not exposed from this browser-only panel.</div>
+    </div>
+   </section>
+ </main>
+</div>
+
+<div id="adminModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="adminModalTitle">
+ <div class="modal-card">
+  <button class="modal-close" type="button" onclick="closeAdminModal()">✕</button>
+  <div class="admin-mark">⌘</div><div class="eyebrow">PRIVATE ACCESS</div>
+  <h2 id="adminModalTitle">Owner Control Center</h2>
+  <p class="muted">Sign in with the owner account to continue.</p>
+  <form id="adminLoginForm">
+   <div class="field"><label>Owner email</label><input id="adminEmail" type="email" required autocomplete="username" placeholder="Owner email address"></div>
+   <div class="field"><label>Password</label><input id="adminPassword" type="password" required autocomplete="current-password" placeholder="Owner password"></div>
+   <button class="full" id="adminLoginButton">Unlock admin panel</button>
+  </form>
+  <div id="adminError" class="small" style="color:#d65b5b;margin-top:12px"></div>
+  <div class="notice">Access requires a server-assigned Supabase app_metadata.role of owner or admin. The hidden logo gesture is not the security boundary.</div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script>
+const SITE_URL = window.location.origin;
+
+const SUPABASE_URL="https://esoekjjwsbtuyjkrbnam.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_WE3HWB-BDEor5QgfPpoNxg_K8PLd6_T";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const DBKEY='northstarBusinessOS_v06';
+const blank=()=>({products:[],orders:[],customers:[],expenses:[],notes:[]});
+let current=null,db=blank(),authMode='signup',currentUser=null;
+let cloudBusy=false;
+
+function setCloudStatus(message,isError=false){
+ const el=document.getElementById('cloudStatus');
+ if(el){el.textContent=message;el.style.color=isError?'#d65b5b':'var(--good)';}
+}
+function localKey(){return DBKEY+'_'+current}
+function saveLocalOnly(){if(current)localStorage.setItem(localKey(),JSON.stringify(db))}
+function setAuthMode(mode){
+ authMode=mode;
+ document.getElementById('signupTab').classList.toggle('active',mode==='signup');
+ document.getElementById('loginTab').classList.toggle('active',mode==='login');
+ document.getElementById('nameField').classList.toggle('hidden',mode==='login');
+ document.getElementById('authName').required=mode==='signup';
+ document.getElementById('authTitle').textContent=mode==='signup'?'Create your account':'Welcome back';
+ document.getElementById('authSubtitle').textContent=mode==='signup'?'Create a secure account with Supabase.':'Sign in to your cloud-authenticated workspace.';
+ document.getElementById('authSubmit').textContent=mode==='signup'?'Create free account':'Sign in';
+ document.getElementById('authError').textContent='';
+}
+document.getElementById('authForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const email=document.getElementById('authEmail').value.trim().toLowerCase();
+ const password=document.getElementById('authPassword').value;
+ const name=document.getElementById('authName').value.trim();
+ const submit=document.getElementById('authSubmit');
+ const error=document.getElementById('authError');
+ submit.disabled=true;submit.textContent='Please wait…';error.textContent='';
+ try{
+  if(authMode==='signup'){
+   const {data,error:err}=await supabaseClient.auth.signUp({
+    email,password,
+    options:{data:{full_name:name},emailRedirectTo:SITE_URL}
+   });
+   if(err)throw err;
+   if(data.session){await activateUser(data.user);}
+   else{error.style.color='var(--good)';error.textContent='Account created. Confirm your email, then sign in.';}
+  }else{
+   const {data,error:err}=await supabaseClient.auth.signInWithPassword({email,password});
+   if(err)throw err;
+   await activateUser(data.user);
+  }
+ }catch(err){
+  error.style.color='#d65b5b';
+  error.textContent=err.message==='Failed to fetch'
+   ?'Supabase connection failed. Check internet/VPN and the project URL/key.'
+   :(err.message||'Authentication failed.');
+ }finally{submit.disabled=false;submit.textContent=authMode==='signup'?'Create free account':'Sign in';}
+});
+
+async function cloudSelect(table){
+ const {data,error}=await supabaseClient.from(table).select('*').order('created_at',{ascending:false});
+ if(error)throw error;
+ return data||[];
+}
+async function loadCloudData(){
+ if(!currentUser)return;
+ setCloudStatus('Loading your private cloud data…');
+ try{
+  const [products,customers,orders,finance]=await Promise.all([
+   cloudSelect('products'),cloudSelect('customers'),cloudSelect('orders'),cloudSelect('finance_records')
+  ]);
+  db.products=products.map(p=>({id:p.id,name:p.name,type:p.description||'Product',price:Number(p.price||0),desc:p.description||''}));
+  db.customers=customers.map(c=>({id:c.id,name:c.name,contact:[c.email,c.phone].filter(Boolean).join(' · '),date:c.created_at?new Date(c.created_at).toLocaleDateString():'',email:c.email||'',phone:c.phone||''}));
+  db.orders=orders.map(o=>({id:o.id,date:o.created_at?new Date(o.created_at).toLocaleDateString():'',customer:o.customer_id||'Customer',item:'Order',amount:Number(o.total_amount||0),status:String(o.status||'pending').toLowerCase()==='completed'?'Paid':String(o.status||'pending').replace(/^./,c=>c.toUpperCase())}));
+  db.expenses=finance.filter(x=>x.record_type==='expense').map(x=>({id:x.id,desc:x.description||'Expense',amount:Number(x.amount||0)}));
+  db.notes=JSON.parse(localStorage.getItem(localKey()+'_notes')||'[]');
+  saveLocalOnly();render();
+  setCloudStatus('Cloud connected · Products, customers, orders and finance loaded.');
+ }catch(err){
+  console.error('Cloud load failed:',err);
+  setCloudStatus('Cloud database error: '+(err.message||'Could not load data'),true);
+  alert('Cloud database could not load: '+(err.message||'Unknown error')+'. Check table policies and columns.');
+ }
+}
+async function activateUser(user){
+ if(!user)return;
+ currentUser=user;current=user.id;
+ db=blank();
+ document.getElementById('auth').classList.add('hidden');
+ document.getElementById('app').classList.remove('hidden');
+ const displayName=user.user_metadata?.full_name||user.email||'User';
+ sidebarUser.textContent=displayName;
+ avatar.textContent=displayName.slice(0,1).toUpperCase();
+ render();
+ await loadCloudData();
+}
+async function enterApp(){
+ const {data:{session},error}=await supabaseClient.auth.getSession();
+ if(error)throw error;
+ if(session?.user){await activateUser(session.user);}
+ else{document.getElementById('auth').classList.remove('hidden');document.getElementById('app').classList.add('hidden');setAuthMode('signup');}
+}
+async function logout(){
+ await supabaseClient.auth.signOut();
+ current=null;currentUser=null;db=blank();
+ document.getElementById('app').classList.add('hidden');
+ document.getElementById('auth').classList.remove('hidden');
+ document.getElementById('authPassword').value='';
+ setAuthMode('login');
+}
+supabaseClient.auth.onAuthStateChange((_event,session)=>{
+ if(session?.user&&!currentUser){setTimeout(()=>activateUser(session.user),0);}
+ if(!session){current=null;currentUser=null;}
+});
+
+const titles={dashboard:['Overview','A clear view of what is happening in your business.'],products:['Products','Manage your products and services.'],orders:['Orders','Track sales and payment status.'],customers:['Customers','Build and maintain customer relationships.'],marketing:['Marketing','Prepare campaign briefs and content plans.'],finance:['Finance','Track recorded revenue and expenses.'],tools:['AI & OCR','Image upload and document notes.'],owner:['Owner area','Private platform administration.']};
+function showPage(id){if(id==='owner'&&!['owner','admin'].includes(String(currentUser?.app_metadata?.role||'').toLowerCase())){alert('Owner access required.');return;}document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));pageTitle.textContent=titles[id][0];pageSub.textContent=titles[id][1];window.scrollTo({top:0,behavior:'smooth'})}
+nav.addEventListener('click',e=>{let b=e.target.closest('[data-page]');if(b)showPage(b.dataset.page)});
+function money(n){return Number(n||0).toLocaleString('en-US')}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+async function productSubmit(e){
+ e.preventDefault();if(!currentUser)return alert('Please sign in first.');
+ const payload={user_id:currentUser.id,name:pname.value.trim(),description:pdesc.value.trim()||ptype.value,price:Number(pprice.value||0),stock:0};
+ try{
+  const {data,error}=await supabaseClient.from('products').insert(payload).select().single();
+  if(error)throw error;
+  db.products.unshift({id:data.id,name:data.name,type:ptype.value,price:Number(data.price||0),desc:data.description||''});
+  e.target.reset();saveLocalOnly();render();setCloudStatus('Product saved to Supabase Cloud.');
+ }catch(err){setCloudStatus('Product save failed: '+err.message,true);alert('Could not save product: '+err.message);}
+}
+async function customerSubmit(e){
+ e.preventDefault();if(!currentUser)return alert('Please sign in first.');
+ const contact=ccontact.value.trim();
+ const payload={user_id:currentUser.id,name:cname.value.trim(),email:contact.includes('@')?contact:null,phone:contact.includes('@')?null:(contact||null)};
+ try{
+  const {data,error}=await supabaseClient.from('customers').insert(payload).select().single();
+  if(error)throw error;
+  db.customers.unshift({id:data.id,name:data.name,contact:contact,date:new Date(data.created_at).toLocaleDateString()});
+  e.target.reset();saveLocalOnly();render();setCloudStatus('Customer saved to Supabase Cloud.');
+ }catch(err){setCloudStatus('Customer save failed: '+err.message,true);alert('Could not save customer: '+err.message);}
+}
+async function orderSubmit(e){
+ e.preventDefault();if(!currentUser)return alert('Please sign in first.');
+ const item=oproduct.value;
+ const known=db.customers.find(c=>c.name.toLowerCase()===ocustomer.value.trim().toLowerCase());
+ // Orders.customer_id is optional and references customers; create no invalid relationship if no customer exists.
+ const payload={user_id:currentUser.id,customer_id:known?.id||null,total_amount:Number(oamount.value||0),status:ostatus.value==='Paid'?'completed':ostatus.value.toLowerCase()};
+ try{
+  const {data,error}=await supabaseClient.from('orders').insert(payload).select().single();
+  if(error)throw error;
+  db.orders.unshift({id:data.id,date:new Date(data.created_at).toLocaleDateString(),customer:ocustomer.value.trim(),item,amount:Number(data.total_amount||0),status:ostatus.value});
+  e.target.reset();saveLocalOnly();render();setCloudStatus('Order saved to Supabase Cloud.');
+ }catch(err){setCloudStatus('Order save failed: '+err.message,true);alert('Could not save order: '+err.message);}
+}
+async function addExpense(){
+ if(!currentUser)return alert('Please sign in first.');
+ if(!edesc.value.trim()||!eamount.value)return alert('Enter an expense and amount');
+ try{
+  const payload={user_id:currentUser.id,record_type:'expense',amount:Number(eamount.value),description:edesc.value.trim()};
+  const {data,error}=await supabaseClient.from('finance_records').insert(payload).select().single();
+  if(error)throw error;
+  db.expenses.unshift({id:data.id,desc:data.description,amount:Number(data.amount)});
+  edesc.value='';eamount.value='';saveLocalOnly();render();setCloudStatus('Expense saved to Supabase Cloud.');
+ }catch(err){setCloudStatus('Expense save failed: '+err.message,true);alert('Could not save expense: '+err.message);}
+}
+productForm.addEventListener('submit',productSubmit);
+customerForm.addEventListener('submit',customerSubmit);
+orderForm.addEventListener('submit',orderSubmit);
+function render(){
+ productRows.innerHTML=db.products.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.type)}</td><td>${money(p.price)}</td><td><button class="secondary" onclick="removeProduct('${String(p.id).replace(/'/g,'')}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="4" class="empty">No products added yet.</td></tr>';
+ oproduct.innerHTML=db.products.map(p=>`<option>${esc(p.name)}</option>`).join('')||'<option value="">Add a product first</option>';
+ orderRows.innerHTML=db.orders.map(o=>`<tr><td>${esc(o.date)}</td><td>${esc(o.customer)}</td><td>${esc(o.item)}</td><td>${money(o.amount)}</td><td><span class="pill">${esc(o.status)}</span></td></tr>`).join('')||'<tr><td colspan="5" class="empty">No orders yet.</td></tr>';
+ customerRows.innerHTML=db.customers.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.contact)}</td><td>${esc(c.date)}</td></tr>`).join('')||'<tr><td colspan="3" class="empty">No customers yet.</td></tr>';
+ expenseRows.innerHTML=db.expenses.map(x=>`<tr><td>${esc(x.desc)}</td><td>${money(x.amount)}</td></tr>`).join('')||'<tr><td colspan="2" class="empty">No expenses recorded.</td></tr>';
+ let revenue=db.orders.filter(o=>o.status==='Paid').reduce((a,o)=>a+o.amount,0),expenses=db.expenses.reduce((a,o)=>a+o.amount,0);
+ metricSales.textContent=money(revenue);metricOrders.textContent=db.orders.length;metricCustomers.textContent=db.customers.length;metricProducts.textContent=db.products.length;rev.textContent=money(revenue);exp.textContent=money(expenses);net.textContent=money(revenue-expenses);
+ recentOrders.innerHTML=db.orders.slice(0,5).map(o=>`<div class="listrow"><div><b>${esc(o.customer)}</b><div class="small">${esc(o.item)} · ${money(o.amount)} MMK</div></div><span class="pill">${esc(o.status)}</span></div>`).join('')||'<div class="empty">No orders yet.</div>';
+ savedNotes.innerHTML=db.notes.map(n=>`<div class="listrow"><span>${esc(n.text.slice(0,110))}</span><span class="small">${esc(n.date)}</span></div>`).join('');
+}
+async function removeProduct(id){
+ if(!currentUser)return;
+ if(!confirm('Delete this product from your cloud workspace?'))return;
+ try{
+  const {error}=await supabaseClient.from('products').delete().eq('id',id).eq('user_id',currentUser.id);
+  if(error)throw error;
+  db.products=db.products.filter(p=>String(p.id)!==String(id));render();saveLocalOnly();setCloudStatus('Product deleted from Supabase Cloud.');
+ }catch(err){setCloudStatus('Delete failed: '+err.message,true);alert('Could not delete product: '+err.message);}
+}
+function makeBrief(){let product=mproduct.value||'[product/service]',audience=maudience.value||'[target audience]';mdraft.value=`CAMPAIGN BRIEF / ကြော်ငြာအစီအစဉ်\nProduct: ${product}\nAudience: ${audience}\nPlatform: ${mplatform.value}\nGoal: ${mgoal.value}\n\n1. Customer problem / ဖောက်သည်ပြဿနာ:\n2. Clear value / ပေးနိုင်မည့်တန်ဖိုး:\n3. Hook / စိတ်ဝင်စားစေမည့်အစ:\n4. Proof / သက်သေပြနိုင်သည့်အချက်:\n5. Call to action / လုပ်ဆောင်ရန်ဖိတ်ခေါ်ချက်:\n\nWrite truthful Burmese and English content. Do not invent reviews, results or guarantees.`}
+function copyBrief(){navigator.clipboard?.writeText(mdraft.value).then(()=>alert('Copied')).catch(()=>alert('Please select and copy the text.'))}
+function saveNote(){if(!ocrtext.value.trim())return;db.notes.unshift({text:ocrtext.value,date:new Date().toLocaleString()});localStorage.setItem(localKey()+'_notes',JSON.stringify(db.notes));ocrtext.value='';render();alert('Note saved on this device.')}
+function copyOCRText(){if(!ocrtext.value.trim())return alert('No text to copy yet.');navigator.clipboard?.writeText(ocrtext.value).then(()=>alert('OCR text copied.')).catch(()=>alert('Please select and copy the text.'))}
+async function runOCR(){
+ const file=imageInput.files?.[0];if(!file)return alert('Choose an image first.');
+ if(!window.Tesseract)return alert('OCR library could not load. Check your internet connection and reload.');
+ const btn=document.getElementById('runOcrBtn'),progress=document.getElementById('ocrProgress');
+ btn.disabled=true;progress.textContent='Preparing OCR engine…';
+ let worker;
+ try{
+  const lang=document.getElementById('ocrLang').value;
+  worker=await Tesseract.createWorker(lang,1,{logger:m=>{if(m.status){const pct=typeof m.progress==='number'?' '+Math.round(m.progress*100)+'%':'';progress.textContent=m.status+pct;}}});
+  const result=await worker.recognize(file);
+  ocrtext.value=(result.data.text||'').trim();
+  progress.textContent=ocrtext.value?'OCR complete. Please review and correct the text before saving.':'No readable text found. Try a clearer, brighter image.';
+ }catch(err){progress.textContent='OCR failed: '+(err.message||String(err));}
+ finally{if(worker)await worker.terminate();btn.disabled=false;}
+}
+imageInput.addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;preview.src=URL.createObjectURL(f);preview.style.display='block';uploadStatus.textContent='Image selected. Ready to upload.'});
+async function uploadImage(){
+ const file=imageInput.files?.[0];
+ if(!file)return alert('Choose an image first.');
+ if(!currentUser)return alert('Please sign in first.');
+ const btn=document.getElementById('uploadImageBtn');
+ const status=document.getElementById('uploadStatus');
+ btn.disabled=true;status.textContent='Uploading…';
+ try{
+  const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const path=`${currentUser.id}/${Date.now()}_${safeName}`;
+  const {data,error}=await supabaseClient.storage.from('User Uploads').upload(path,file,{upsert:false,contentType:file.type||'application/octet-stream'});
+  if(error)throw error;
+  status.textContent='Uploaded successfully to your private folder.';
+  alert('Upload successful.');
+ }catch(err){status.textContent='Upload failed: '+(err.message||'Unknown error');}
+ finally{btn.disabled=false;}
+}
+function exportData(){let blob=new Blob([JSON.stringify({account:current,data:db,scope:'Cloud records plus device-local notes/draft data'},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='northstar-business-backup.json';a.click();URL.revokeObjectURL(a.href)}
+function toggleTheme(){let t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('northstarTheme',t);themeBtn.textContent=t==='dark'?'☀ Light':'☾ Dark'}
+let theme=localStorage.getItem('northstarTheme')||'light';document.documentElement.dataset.theme=theme;themeBtn.textContent=theme==='dark'?'☀ Light':'☾ Dark';
+
+// Hidden owner entry: five quick taps on either brand mark.
+let brandTapCount=0,brandTapTimer=null;
+function handleBrandTap(){
+ brandTapCount++;
+ clearTimeout(brandTapTimer);
+ brandTapTimer=setTimeout(()=>{brandTapCount=0;},1800);
+ if(brandTapCount>=5){
+  brandTapCount=0;clearTimeout(brandTapTimer);
+  document.getElementById('adminModal').classList.remove('hidden');
+  document.getElementById('adminError').textContent='';
+  document.getElementById('adminEmail').focus();
+ }
+}
+function closeAdminModal(){document.getElementById('adminModal').classList.add('hidden');document.getElementById('adminPassword').value='';}
+document.getElementById('adminLoginForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const email=document.getElementById('adminEmail').value.trim().toLowerCase();
+ const password=document.getElementById('adminPassword').value;
+ const btn=document.getElementById('adminLoginButton'),err=document.getElementById('adminError');
+ btn.disabled=true;btn.textContent='Verifying…';err.textContent='';
+ try{
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+  if(error)throw error;
+  const role=data.user?.app_metadata?.role;
+  if(!['owner','admin'].includes(String(role||'').toLowerCase())){
+   await supabaseClient.auth.signOut();
+   throw new Error('This account is not authorized. Set app_metadata.role to owner in Supabase Auth user settings.');
+  }
+  closeAdminModal();
+  await activateUser(data.user);
+  showPage('owner');
+  refreshAdminPanel();
+ }catch(ex){err.textContent=ex.message||'Admin sign-in failed.';}
+ finally{btn.disabled=false;btn.textContent='Unlock admin panel';}
+});
+async function refreshAdminPanel(){
+ if(!currentUser||!['owner','admin'].includes(String(currentUser.app_metadata?.role||'').toLowerCase()))return;
+ document.getElementById('adminProducts').textContent=db.products.length;
+ document.getElementById('adminCustomers').textContent=db.customers.length;
+ document.getElementById('adminOrders').textContent=db.orders.length;
+ document.getElementById('adminFinance').textContent=db.expenses.length;
+ document.getElementById('adminAccount').textContent=currentUser.email||'—';
+ document.getElementById('adminRole').textContent=currentUser.app_metadata.role;
+ document.getElementById('adminDbStatus').textContent='Connected';
+ document.getElementById('adminPanelStatus').textContent='Overview refreshed at '+new Date().toLocaleString();
+}
+
+if(current&&accounts[current])enterApp();else setAuthMode('signup');
+</script>
+</body></html>
