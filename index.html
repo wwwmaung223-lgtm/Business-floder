@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Business OS · Supabase Connected</title>
+<style>
+:root{color-scheme:light;--bg:#f5f6fa;--surface:#fff;--surface2:#f8f9fc;--ink:#182033;--muted:#778198;--line:#e8ebf1;--accent:#6558e8;--accent-soft:#f0efff;--sidebar:#151a2a;--side-ink:#c8cee0;--good:#15966a;--warn:#fff7e6;--shadow:0 10px 35px rgba(22,31,54,.06)}
+:root[data-theme=dark]{color-scheme:dark;--bg:#0c1220;--surface:#151d2d;--surface2:#1a2436;--ink:#edf1fb;--muted:#9aa6bd;--line:#29344a;--accent:#9a90ff;--accent-soft:#2b2850;--sidebar:#080e1b;--side-ink:#c8cee0;--good:#5bd3a0;--warn:#302a1b;--shadow:0 12px 35px rgba(0,0,0,.2)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:11px 15px;background:var(--accent);color:white;font-weight:700}button:hover{filter:brightness(1.06)}button:disabled{opacity:.45;cursor:not-allowed}.hidden{display:none!important}
+.auth{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;background:var(--surface)}.auth-brand{padding:clamp(28px,6vw,82px);background:radial-gradient(circle at 20% 15%,#6b5de955,transparent 34%),linear-gradient(145deg,#141a2b,#25224b);color:#fff;display:flex;flex-direction:column;justify-content:space-between}.logo{font-weight:900;letter-spacing:.7px;font-size:18px}.logo span{color:#a99fff}.brand-copy{max-width:570px}.brand-copy h1{font-size:clamp(34px,5vw,64px);line-height:1.04;letter-spacing:-2px;margin:0 0 18px}.brand-copy p{color:#c5c9dc;font-size:16px;max-width:470px}.brand-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:25px}.brand-pills span{border:1px solid #ffffff2c;background:#ffffff12;border-radius:99px;padding:7px 11px;font-size:12px}.auth-foot{font-size:12px;color:#9ea7c1}.auth-form-wrap{display:grid;place-items:center;padding:28px}.auth-card{width:min(430px,100%)}.auth-card h2{font-size:27px;letter-spacing:-.7px;margin:0 0 5px}.muted{color:var(--muted)}.tabs{display:flex;gap:6px;background:var(--surface2);border:1px solid var(--line);padding:5px;border-radius:13px;margin:24px 0}.tabs button{flex:1;background:transparent;color:var(--muted)}.tabs button.active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}.field{display:grid;gap:6px;margin:13px 0}.field label{font-size:12px;font-weight:700;color:var(--muted)}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--surface2);color:var(--ink);padding:12px 13px;outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}.full{width:100%}.auth-note{font-size:11px;line-height:1.5;margin-top:16px;padding:11px;border-radius:10px;background:var(--warn);color:var(--muted)}
+.app{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}.sidebar{height:100vh;position:sticky;top:0;background:var(--sidebar);color:#fff;padding:22px 15px;display:flex;flex-direction:column;gap:24px;z-index:5}.sidebar .logo{padding:0 10px}.sidebar .logo small{display:block;color:#929db6;font-size:9px;letter-spacing:1.7px;margin-top:3px}.nav{display:grid;gap:5px}.nav button{background:transparent;color:var(--side-ink);text-align:left;padding:10px 12px;font-size:13px;font-weight:600}.nav button.active,.nav button:hover{background:#2a3046;color:white}.sidebar-bottom{margin-top:auto;color:#929db6;font-size:11px;padding:8px 10px}.main{max-width:1550px;width:100%;margin:auto;padding:28px clamp(16px,3vw,44px) 50px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:24px}.eyebrow{font-size:10px;font-weight:850;letter-spacing:1.8px;color:var(--accent)}.page-title{font-size:29px;letter-spacing:-.9px;font-weight:850;margin:3px 0}.page-sub{color:var(--muted);font-size:13px}.top-actions{display:flex;align-items:center;gap:8px}.iconbtn,.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800}.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}.card,.panel{background:var(--surface);border:1px solid var(--line);border-radius:17px;padding:18px;box-shadow:var(--shadow)}.metric-label{color:var(--muted);font-size:12px;font-weight:650}.metric{font-size:27px;font-weight:850;letter-spacing:-.7px;margin:5px 0}.metric-foot{font-size:11px;color:var(--good)}.two-col{display:grid;grid-template-columns:1.25fr .9fr;gap:15px}.panel h3{font-size:15px;margin:0 0 14px}.quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.quick button{background:var(--accent-soft);color:var(--ink);text-align:left;padding:13px;min-height:76px}.quick b{display:block;font-size:12px}.quick small{color:var(--muted);font-weight:500}.section{display:none}.section.active{display:block}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:25px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.pill{border-radius:99px;background:var(--accent-soft);color:var(--accent);font-size:10px;padding:4px 9px;font-weight:750}.notice{background:var(--warn);border:1px solid var(--line);padding:12px 14px;border-radius:12px;color:var(--muted);font-size:12px;margin:14px 0}.content-list{display:grid;gap:8px}.listrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.listrow:last-child{border:0}.small{font-size:11px;color:var(--muted)}.owner-locked{padding:25px;border:1px dashed var(--line);border-radius:15px;text-align:center}
+@media(max-width:1000px){.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
+@media(max-width:720px){.auth{grid-template-columns:1fr}.auth-brand{min-height:255px;padding:25px}.brand-copy h1{font-size:34px}.brand-copy p{font-size:13px}.brand-pills{margin-top:12px}.auth-foot{display:none}.auth-form-wrap{padding:25px 20px 40px}.app{grid-template-columns:1fr}.sidebar{height:auto;min-height:0;position:sticky;top:0;padding:11px 10px 8px;gap:9px}.sidebar .logo{font-size:15px;padding:0 5px}.sidebar .logo small{font-size:8px}.nav{display:flex;overflow-x:auto;scrollbar-width:none;gap:4px}.nav::-webkit-scrollbar{display:none}.nav button{flex:0 0 auto;white-space:nowrap;padding:8px 10px;font-size:11px}.sidebar-bottom{display:none}.main{padding:18px 13px 35px}.topbar{align-items:flex-start;flex-direction:column;margin-bottom:16px}.top-actions{width:100%}.top-actions button{flex:1}.page-title{font-size:25px}.grid4{gap:8px;margin:13px 0}.card{padding:13px;border-radius:14px}.metric{font-size:21px}.panel{padding:15px;border-radius:15px}.quick{grid-template-columns:repeat(2,minmax(0,1fr))}.formgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="auth" class="auth">
+ <section class="auth-brand">
+  <div class="logo">✦ NORTHSTAR <span>BUSINESS OS</span></div>
+  <div class="brand-copy"><div class="eyebrow" style="color:#b7afff">ONE WORKSPACE. MANY POSSIBILITIES.</div><h1>Build your business, not busywork.</h1><p>One clear workspace for products, customers, marketing, orders and business insights — designed for phone and laptop.</p><div class="brand-pills"><span>✦ AI-ready workflows</span><span>◈ Store & services</span><span>◎ Marketing</span><span>↗ Business insights</span></div></div>
+  <div class="auth-foot">A simple workspace for ambitious small businesses.</div>
+ </section>
+ <section class="auth-form-wrap"><div class="auth-card">
+  <div class="eyebrow">WELCOME TO YOUR WORKSPACE</div><h2 id="authTitle">Create your account</h2><div class="muted" id="authSubtitle">Start with a free local demo workspace.</div>
+  <div class="tabs"><button id="signupTab" class="active" onclick="setAuthMode('signup')">Create account</button><button id="loginTab" onclick="setAuthMode('login')">Sign in</button></div>
+  <form id="authForm">
+   <div class="field" id="nameField"><label>Your name / Business name</label><input id="authName" required placeholder="e.g. Aung's Studio"></div>
+   <div class="field"><label>Email address</label><input id="authEmail" type="email" required placeholder="you@example.com" autocomplete="email"></div>
+   <div class="field"><label>Password</label><input id="authPassword" type="password" minlength="6" required placeholder="At least 6 characters" autocomplete="new-password"></div>
+   <button class="full" id="authSubmit">Create free account</button>
+  </form>
+  <div class="auth-note">Authentication uses Supabase. Business records in this prototype are still saved locally on this device; cloud database sync will be connected in a later step.</div>
+  <div id="authError" class="small" style="color:#d65b5b;margin-top:10px"></div>
+ </div></section>
+</div>
+<div id="app" class="app hidden">
+ <aside class="sidebar">
+  <div class="logo">✦ NORTHSTAR <small>BUSINESS OS</small></div>
+  <nav class="nav" id="nav">
+   <button class="active" data-page="dashboard">⌂ &nbsp; Overview</button>
+   <button data-page="products">▣ &nbsp; Products</button>
+   <button data-page="orders">⇄ &nbsp; Orders</button>
+   <button data-page="customers">♙ &nbsp; Customers</button>
+   <button data-page="marketing">◎ &nbsp; Marketing</button>
+   <button data-page="finance">▤ &nbsp; Finance</button>
+   <button data-page="tools">✧ &nbsp; AI & OCR</button>
+  </nav>
+  <div class="sidebar-bottom">Supabase-connected prototype · v0.5<br><span id="sidebarUser">Local demo</span></div>
+ </aside>
+ <main class="main">
+  <header class="topbar"><div><div class="eyebrow">YOUR BUSINESS COMMAND CENTER</div><div class="page-title" id="pageTitle">Overview</div><div class="page-sub" id="pageSub">A clear view of what's happening in your business.</div></div><div class="top-actions"><button class="secondary" id="themeBtn" onclick="toggleTheme()">☾ Dark</button><button class="secondary" onclick="exportData()">↓ Backup</button><button class="avatar" id="avatar" title="Private owner area" onclick="showPage('owner')">U</button><button class="secondary" onclick="logout()">Sign out</button></div></header>
+  <section class="section active" id="dashboard">
+   <div class="grid4">
+    <div class="card"><div class="metric-label">Paid revenue · MMK</div><div class="metric" id="metricSales">0</div><div class="metric-foot">Recorded paid orders</div></div>
+    <div class="card"><div class="metric-label">Orders</div><div class="metric" id="metricOrders">0</div><div class="metric-foot">All recorded orders</div></div>
+    <div class="card"><div class="metric-label">Customers</div><div class="metric" id="metricCustomers">0</div><div class="metric-foot">Saved contacts</div></div>
+    <div class="card"><div class="metric-label">Products & services</div><div class="metric" id="metricProducts">0</div><div class="metric-foot">Your catalog</div></div>
+   </div>
+   <div class="two-col"><div class="panel"><h3>Quick actions</h3><div class="quick">
+    <button onclick="showPage('products')"><b>＋ Add product</b><small>Build your catalog</small></button><button onclick="showPage('orders')"><b>＋ New order</b><small>Record a sale</small></button><button onclick="showPage('customers')"><b>＋ Add customer</b><small>Save a contact</small></button><button onclick="showPage('marketing')"><b>✎ Content brief</b><small>Plan a campaign</small></button><button onclick="showPage('tools')"><b>▧ Image & OCR</b><small>Upload a photo</small></button><button onclick="showPage('finance')"><b>＋ Expense</b><small>Track costs</small></button>
+   </div></div><div class="panel"><h3>Recent orders</h3><div id="recentOrders" class="content-list"><div class="empty">No orders yet</div></div></div></div>
+   <div class="notice">Your workspace is currently a device-local prototype. Cloud sync, real AI, OCR extraction, email verification and payment gateways are not connected yet.</div>
+  </section>
+  <section class="section" id="products"><div class="panel"><h3>Product & service catalog</h3><form id="productForm"><div class="formgrid"><div class="field"><label>Name</label><input id="pname" required placeholder="Product or service name"></div><div class="field"><label>Type</label><select id="ptype"><option>Digital product</option><option>Physical product</option><option>Service</option><option>Course</option></select></div><div class="field"><label>Price (MMK)</label><input id="pprice" type="number" min="0" required></div><div class="field"><label>Description</label><input id="pdesc" placeholder="Short value proposition"></div></div><button>Add product</button></form><div class="tablewrap"><table><thead><tr><th>Name</th><th>Type</th><th>Price · MMK</th><th></th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
+  <section class="section" id="orders"><div class="panel"><h3>Record a new order</h3><form id="orderForm"><div class="formgrid"><div class="field"><label>Customer name</label><input id="ocustomer" required></div><div class="field"><label>Product / service</label><select id="oproduct" required></select></div><div class="field"><label>Amount · MMK</label><input id="oamount" type="number" min="0" required></div><div class="field"><label>Payment status</label><select id="ostatus"><option>Pending</option><option>Paid</option><option>Cancelled</option></select></div></div><button>Create order</button></form><div class="tablewrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Item</th><th>Amount</th><th>Status</th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
+  <section class="section" id="customers"><div class="panel"><h3>Customer directory</h3><form id="customerForm"><div class="formgrid"><div class="field"><label>Name</label><input id="cname" required></div><div class="field"><label>Email / phone / social handle</label><input id="ccontact"></div></div><button>Add customer</button></form><div class="tablewrap"><table><thead><tr><th>Name</th><th>Contact</th><th>Added</th></tr></thead><tbody id="customerRows"></tbody></table></div></div></section>
+  <section class="section" id="marketing"><div class="panel"><h3>Marketing brief builder</h3><div class="field"><label>Product / service</label><input id="mproduct" placeholder="What are you promoting?"></div><div class="field"><label>Target audience</label><input id="maudience" placeholder="Who needs it?"></div><div class="formgrid"><div class="field"><label>Platform</label><select id="mplatform"><option>Facebook</option><option>TikTok</option><option>Instagram</option><option>LinkedIn</option><option>Email</option></select></div><div class="field"><label>Campaign goal</label><select id="mgoal"><option>Awareness</option><option>Engagement</option><option>Sales</option><option>Leads</option></select></div></div><button onclick="makeBrief()">Generate brief</button><div class="field"><label>Campaign brief · Burmese + English ready</label><textarea id="mdraft" rows="9" placeholder="Your campaign brief will appear here..."></textarea></div><button class="secondary" onclick="copyBrief()">Copy brief</button><p class="small">This creates a structured brief, not AI-generated claims or testimonials.</p></div></section>
+  <section class="section" id="finance"><div class="panel"><h3>Finance tracker</h3><div class="formgrid"><div class="field"><label>Expense description</label><input id="edesc" placeholder="Internet, tools, delivery..."></div><div class="field"><label>Amount · MMK</label><input id="eamount" type="number" min="0"></div></div><button onclick="addExpense()">Add expense</button><div class="grid4"><div class="card"><div class="metric-label">Paid revenue</div><div class="metric" id="rev">0</div></div><div class="card"><div class="metric-label">Expenses</div><div class="metric" id="exp">0</div></div><div class="card"><div class="metric-label">Net recorded</div><div class="metric" id="net">0</div></div></div><div class="tablewrap"><table><thead><tr><th>Expense</th><th>Amount · MMK</th></tr></thead><tbody id="expenseRows"></tbody></table></div></div></section>
+  <section class="section" id="tools"><div class="panel"><h3>Image & OCR workspace</h3><div class="notice">Upload a receipt, form or product photo to preview it. Automatic OCR requires a connected OCR service in the deployed version.</div><div class="field"><label>Choose image</label><input type="file" id="imageInput" accept="image/*"></div><div class="row"><button type="button" id="uploadImageBtn" onclick="uploadImage()">Upload to my private cloud folder</button><span id="uploadStatus" class="small">Sign in to upload.</span></div><img id="preview" style="display:none;max-width:100%;max-height:340px;border-radius:14px"><div class="field"><label>Extracted text / notes</label><textarea id="ocrtext" rows="5" placeholder="Type or paste text here in this prototype..."></textarea></div><button onclick="saveNote()">Save note</button><div id="savedNotes" class="content-list" style="margin-top:12px"></div></div></section>
+  <section class="section" id="owner"><div class="panel"><div class="eyebrow">RESTRICTED WORKSPACE</div><h3>Owner control center</h3><div class="owner-locked"><div style="font-size:28px">🔐</div><b>Server-verified owner access is not configured yet</b><p class="muted">The previous front-end-only access code has been removed because it could be viewed in page source. Owner permissions must be verified by a backend before this area can safely manage users, billing or global settings.</p></div><h3 style="margin-top:22px">Planned owner controls</h3><div class="content-list"><div class="listrow">User & role management <span class="pill">Planned</span></div><div class="listrow">Platform settings <span class="pill">Planned</span></div><div class="listrow">Database backups <span class="pill">Planned</span></div><div class="listrow">Audit logs & security <span class="pill">Planned</span></div></div></div></section>
+ </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://esoekjjwsbtuyjkrbnam.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_WE3HWB-BDEor5QgfPpoNxg_K8PLd6_T";
+const SITE_URL="https://business-floder-wph7.vercel.app";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{
+ auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+});
+const DBKEY='northstarBusinessOS_v05', SESSION='northstarSupabaseSession_v05';
+const blank=()=>({products:[],orders:[],customers:[],expenses:[],notes:[]});
+let current=null,db=blank(),authMode='signup',currentUser=null;
+function save(){if(current){localStorage.setItem(DBKEY+'_'+current,JSON.stringify(db));render()}}
+function setAuthMode(mode){
+ authMode=mode;
+ document.getElementById('signupTab').classList.toggle('active',mode==='signup');
+ document.getElementById('loginTab').classList.toggle('active',mode==='login');
+ document.getElementById('nameField').classList.toggle('hidden',mode==='login');
+ document.getElementById('authName').required=mode==='signup';
+ document.getElementById('authTitle').textContent=mode==='signup'?'Create your account':'Welcome back';
+ document.getElementById('authSubtitle').textContent=mode==='signup'?'Create a secure account with Supabase.':'Sign in to your cloud-authenticated workspace.';
+ document.getElementById('authSubmit').textContent=mode==='signup'?'Create free account':'Sign in';
+ document.getElementById('authError').textContent='';
+}
+document.getElementById('authForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const email=document.getElementById('authEmail').value.trim().toLowerCase();
+ const password=document.getElementById('authPassword').value;
+ const name=document.getElementById('authName').value.trim();
+ const submit=document.getElementById('authSubmit');
+ const error=document.getElementById('authError');
+ submit.disabled=true; submit.textContent='Please wait…'; error.textContent='';
+ try{
+  if(authMode==='signup'){
+   const {data,error:err}=await supabaseClient.auth.signUp({
+    email,password,
+    options:{
+      data:{full_name:name},
+      emailRedirectTo:SITE_URL
+     }
+   });
+   if(err) throw err;
+   if(data.session){await activateUser(data.user);}
+   else {error.style.color='var(--good)';error.textContent='Account created. Check your email and confirm the sign-up link, then return here to sign in.';}
+  }else{
+   const {data,error:err}=await supabaseClient.auth.signInWithPassword({email,password});
+   if(err) throw err;
+   await activateUser(data.user);
+  }
+ }catch(err){error.style.color='#d65b5b';error.textContent=err.message||'Authentication failed.';}
+ finally{submit.disabled=false;submit.textContent=authMode==='signup'?'Create free account':'Sign in';}
+});
+async function activateUser(user){
+ if(!user)return;
+ currentUser=user;current=user.id;
+ db=JSON.parse(localStorage.getItem(DBKEY+'_'+current)||'null')||blank();
+ document.getElementById('auth').classList.add('hidden');
+ document.getElementById('app').classList.remove('hidden');
+ const displayName=user.user_metadata?.full_name||user.email||'User';
+ sidebarUser.textContent=displayName;
+ avatar.textContent=displayName.slice(0,1).toUpperCase();
+ render();
+}
+async function enterApp(){
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ if(session?.user){await activateUser(session.user);}
+ else {document.getElementById('auth').classList.remove('hidden');document.getElementById('app').classList.add('hidden');setAuthMode('signup');}
+}
+async function logout(){
+ await supabaseClient.auth.signOut();
+ current=null;currentUser=null;db=blank();
+ document.getElementById('app').classList.add('hidden');
+ document.getElementById('auth').classList.remove('hidden');
+ document.getElementById('authPassword').value='';
+ setAuthMode('login');
+}
+supabaseClient.auth.onAuthStateChange((_event,session)=>{
+ if(session?.user && !currentUser){setTimeout(()=>activateUser(session.user),0);}
+ if(!session){current=null;currentUser=null;}
+});
+const titles={dashboard:['Overview','A clear view of what is happening in your business.'],products:['Products','Manage your products and services.'],orders:['Orders','Track sales and payment status.'],customers:['Customers','Build and maintain customer relationships.'],marketing:['Marketing','Prepare campaign briefs and content plans.'],finance:['Finance','Track recorded revenue and expenses.'],tools:['AI & OCR','Image upload and document notes.'],owner:['Owner area','Private platform administration.']};
+function showPage(id){document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));pageTitle.textContent=titles[id][0];pageSub.textContent=titles[id][1];window.scrollTo({top:0,behavior:'smooth'})}
+nav.addEventListener('click',e=>{let b=e.target.closest('[data-page]');if(b)showPage(b.dataset.page)});
+function money(n){return Number(n||0).toLocaleString('en-US')}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+productForm.addEventListener('submit',e=>{e.preventDefault();db.products.push({id:Date.now(),name:pname.value,type:ptype.value,price:+pprice.value,desc:pdesc.value});e.target.reset();save()});
+customerForm.addEventListener('submit',e=>{e.preventDefault();db.customers.push({name:cname.value,contact:ccontact.value,date:new Date().toLocaleDateString()});e.target.reset();save()});
+orderForm.addEventListener('submit',e=>{e.preventDefault();db.orders.unshift({date:new Date().toLocaleDateString(),customer:ocustomer.value,item:oproduct.value,amount:+oamount.value,status:ostatus.value});e.target.reset();save()});
+function addExpense(){if(!edesc.value.trim()||!eamount.value)return alert('Enter an expense and amount');db.expenses.push({desc:edesc.value,amount:+eamount.value});edesc.value='';eamount.value='';save()}
+function render(){
+ productRows.innerHTML=db.products.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.type)}</td><td>${money(p.price)}</td><td><button class="secondary" onclick="removeProduct(${p.id})">Delete</button></td></tr>`).join('')||'<tr><td colspan="4" class="empty">No products added yet.</td></tr>';
+ oproduct.innerHTML=db.products.map(p=>`<option>${esc(p.name)}</option>`).join('')||'<option value="">Add a product first</option>';
+ orderRows.innerHTML=db.orders.map(o=>`<tr><td>${esc(o.date)}</td><td>${esc(o.customer)}</td><td>${esc(o.item)}</td><td>${money(o.amount)}</td><td><span class="pill">${esc(o.status)}</span></td></tr>`).join('')||'<tr><td colspan="5" class="empty">No orders yet.</td></tr>';
+ customerRows.innerHTML=db.customers.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.contact)}</td><td>${esc(c.date)}</td></tr>`).join('')||'<tr><td colspan="3" class="empty">No customers yet.</td></tr>';
+ expenseRows.innerHTML=db.expenses.map(x=>`<tr><td>${esc(x.desc)}</td><td>${money(x.amount)}</td></tr>`).join('')||'<tr><td colspan="2" class="empty">No expenses recorded.</td></tr>';
+ let revenue=db.orders.filter(o=>o.status==='Paid').reduce((a,o)=>a+o.amount,0),expenses=db.expenses.reduce((a,o)=>a+o.amount,0);
+ metricSales.textContent=money(revenue);metricOrders.textContent=db.orders.length;metricCustomers.textContent=db.customers.length;metricProducts.textContent=db.products.length;rev.textContent=money(revenue);exp.textContent=money(expenses);net.textContent=money(revenue-expenses);
+ recentOrders.innerHTML=db.orders.slice(0,5).map(o=>`<div class="listrow"><div><b>${esc(o.customer)}</b><div class="small">${esc(o.item)} · ${money(o.amount)} MMK</div></div><span class="pill">${esc(o.status)}</span></div>`).join('')||'<div class="empty">No orders yet.</div>';
+ savedNotes.innerHTML=db.notes.map(n=>`<div class="listrow"><span>${esc(n.text.slice(0,110))}</span><span class="small">${esc(n.date)}</span></div>`).join('');
+}
+function removeProduct(id){db.products=db.products.filter(p=>p.id!==id);save()}
+function makeBrief(){let product=mproduct.value||'[product/service]',audience=maudience.value||'[target audience]';mdraft.value=`CAMPAIGN BRIEF / ကြော်ငြာအစီအစဉ်\nProduct: ${product}\nAudience: ${audience}\nPlatform: ${mplatform.value}\nGoal: ${mgoal.value}\n\n1. Customer problem / ဖောက်သည်ပြဿနာ:\n2. Clear value / ပေးနိုင်မည့်တန်ဖိုး:\n3. Hook / စိတ်ဝင်စားစေမည့်အစ:\n4. Proof / သက်သေပြနိုင်သည့်အချက်:\n5. Call to action / လုပ်ဆောင်ရန်ဖိတ်ခေါ်ချက်:\n\nWrite truthful Burmese and English content. Do not invent reviews, results or guarantees.`}
+function copyBrief(){navigator.clipboard?.writeText(mdraft.value).then(()=>alert('Copied')).catch(()=>alert('Please select and copy the text.'))}
+function saveNote(){if(!ocrtext.value.trim())return;db.notes.unshift({text:ocrtext.value,date:new Date().toLocaleString()});ocrtext.value='';save()}
+imageInput.addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;preview.src=URL.createObjectURL(f);preview.style.display='block';uploadStatus.textContent='Image selected. Ready to upload.'});
+async function uploadImage(){
+ const file=imageInput.files?.[0];
+ if(!file)return alert('Choose an image first.');
+ if(!currentUser)return alert('Please sign in first.');
+ const btn=document.getElementById('uploadImageBtn');
+ const status=document.getElementById('uploadStatus');
+ btn.disabled=true;status.textContent='Uploading…';
+ try{
+  const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const path=`${currentUser.id}/${Date.now()}_${safeName}`;
+  const {data,error}=await supabaseClient.storage.from('User Uploads').upload(path,file,{upsert:false,contentType:file.type||'application/octet-stream'});
+  if(error)throw error;
+  status.textContent='Uploaded successfully to your private folder.';
+  alert('Upload successful.');
+ }catch(err){status.textContent='Upload failed: '+(err.message||'Unknown error');}
+ finally{btn.disabled=false;}
+}
+function exportData(){let blob=new Blob([JSON.stringify({account:current,data:db},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='northstar-business-backup.json';a.click();URL.revokeObjectURL(a.href)}
+function toggleTheme(){let t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('northstarTheme',t);themeBtn.textContent=t==='dark'?'☀ Light':'☾ Dark'}
+let theme=localStorage.getItem('northstarTheme')||'light';document.documentElement.dataset.theme=theme;themeBtn.textContent=theme==='dark'?'☀ Light':'☾ Dark';
+enterApp().catch(err=>{
+ document.getElementById('auth').classList.remove('hidden');
+ document.getElementById('app').classList.add('hidden');
+ document.getElementById('authError').textContent='Could not restore your session: '+(err.message||'Please refresh and try again.');
+});
+</script>
+</body></html>
