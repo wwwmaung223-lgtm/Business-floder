@@ -633,7 +633,7 @@ document.getElementById('authForm').addEventListener('submit',async e=>{
  }finally{submit.disabled=false;submit.textContent=authMode==='signup'?'Create free account':'Sign in';}
 });
 
-async function cloudSelect(table){
+async async function cloudSelect(table){
  const {data,error}=await supabaseClient.from(table).select('*').order('created_at',{ascending:false});
  if(error)throw error;
  return data||[];
