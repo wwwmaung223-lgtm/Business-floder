@@ -84,7 +84,7 @@ Illustrative scenarios using current monthly list prices:
 |---|---|---:|
 | Early validation | 10 Starter + 3 Growth | 188,700 MMK |
 | First milestone | 20 Starter + 10 Growth + 2 Business | 656,800 MMK |
-| Growth milestone | 40 Starter + 20 Growth + 5 Business | 1,195,500 MMK |
+| Growth milestone | 40 Starter + 20 Growth + 5 Business | 1,393,500 MMK |
 
 These are arithmetic scenarios only, not forecasts or guarantees. Actual net income will be lower after payment fees, taxes, refunds, support time, hosting limits, and any operating costs.
 
