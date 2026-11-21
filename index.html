@@ -758,10 +758,20 @@ async function addExpense(){
  }catch(err){setCloudStatus('Expense save failed: '+err.message,true);alert('Could not save expense: '+err.message);}
 }
 productForm.addEventListener('submit',productSubmit);
+productRows.addEventListener('click',e=>{
+ const button=e.target.closest('[data-action="delete-product"]');
+ if(!button||!productRows.contains(button))return;
+ const id=button.dataset.productId||'';
+ if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)){
+  setCloudStatus('Delete blocked: invalid product identifier.',true);
+  return;
+ }
+ removeProduct(id);
+});
 customerForm.addEventListener('submit',customerSubmit);
 orderForm.addEventListener('submit',orderSubmit);
 function render(){
- productRows.innerHTML=db.products.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.type)}</td><td>${money(p.price)}</td><td><button class="secondary" onclick="removeProduct('${String(p.id).replace(/'/g,'')}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="4" class="empty">No products added yet.</td></tr>';
+ productRows.innerHTML=db.products.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.type)}</td><td>${money(p.price)}</td><td><button type="button" class="secondary" data-action="delete-product" data-product-id="${esc(p.id)}">Delete</button></td></tr>`).join('')||'<tr><td colspan="4" class="empty">No products added yet.</td></tr>';
  oproduct.innerHTML=db.products.map(p=>`<option>${esc(p.name)}</option>`).join('')||'<option value="">Add a product first</option>';
  orderRows.innerHTML=db.orders.map(o=>`<tr><td>${esc(o.date)}</td><td>${esc(o.customer)}</td><td>${esc(o.item)}</td><td>${money(o.amount)}</td><td><span class="pill">${esc(o.status)}</span></td></tr>`).join('')||'<tr><td colspan="5" class="empty">No orders yet.</td></tr>';
  customerRows.innerHTML=db.customers.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.contact)}</td><td>${esc(c.date)}</td></tr>`).join('')||'<tr><td colspan="3" class="empty">No customers yet.</td></tr>';
