@@ -60,6 +60,9 @@ required = {
     "user-scoped product deletion": ".eq('user_id',currentUser.id)",
     "OCR upload MIME validation": "function validateImageFile(file)",
     "10 MiB client-side upload limit": "file.size>10*1024*1024",
+    "OCR cloud/local status is tracked": "let ocrNotesCloudAvailable=true",
+    "OCR fallback is disclosed to the user": "OCR notes are device-local until cloud access is restored.",
+
     "restricted image picker types": 'accept="image/jpeg,image/png,image/webp"',
 }
 for label, token in required.items():
