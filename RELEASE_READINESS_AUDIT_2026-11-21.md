@@ -76,5 +76,14 @@ All inspected tables below have RLS enabled in the schema inventory.
 - This audit did not run browser E2E, real Storage upload, two-user isolation, payment reconciliation, or POS transaction tests.
 - Passing static checks must not be described as full production readiness.
 
+## Follow-up verification — 2026-11-21 (later)
+
+- The exact private Storage bucket ID `User Uploads` now exists in the live project metadata. Read-only verification: private (`public=false`), 10 MiB limit, allowed MIME types JPEG/PNG/WebP.
+- Four authenticated owner-folder policies are present for INSERT, SELECT, UPDATE, and DELETE. Each policy constrains `bucket_id = 'User Uploads'` and the first folder segment to the caller's `auth.uid()`.
+- The legacy `User Uplads` bucket still contains two objects; it was not modified.
+- Static-check follow-up found and corrected a malformed async declaration in the cloud data loader on the hardening branch. GitHub Actions run 44917309554 completed successfully on commit `282910aa94e516c2f3b3bdb2c1ebd8fe3e346a1d`.
+- This success covers HTML parsing, inline JavaScript syntax, and the existing frontend invariants only. It does not replace browser E2E, real Storage API upload/download, two-user isolation, or POS transaction tests.
+- PR #1 remains draft. No production schema changes, data writes, merge, or deployment were performed.
+
 ## Deployment gate
 Keep PR #1 in draft until P0 checks and review are complete. Do not merge or deploy this branch as a claim that upload, POS inventory, or payment automation is complete.
