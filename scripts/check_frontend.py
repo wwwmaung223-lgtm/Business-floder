@@ -58,6 +58,9 @@ required = {
     "product action data attribute": 'data-action="delete-product"',
     "UUID format validation": "!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(id)",
     "user-scoped product deletion": ".eq('user_id',currentUser.id)",
+    "OCR upload MIME validation": "function validateImageFile(file)",
+    "10 MiB client-side upload limit": "file.size>10*1024*1024",
+    "restricted image picker types": 'accept="image/jpeg,image/png,image/webp"',
 }
 for label, token in required.items():
     if token not in source:
