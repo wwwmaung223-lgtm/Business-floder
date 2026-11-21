@@ -66,5 +66,23 @@ for label, token in required.items():
     if token not in source:
         raise SystemExit(f"FAIL: missing invariant: {label}")
 
+# Guard against wiring the currently unaudited POS RPC or bypassing its
+# transactional workflow from browser code. These checks are deliberate release
+# guardrails until the server-side sale contract has been hardened and tested.
+unsafe_pos_tokens = {
+    "unaudited POS RPC must not be called by browser code": "northstar_create_pos_sale",
+    "order items must not be written outside the transactional sale workflow": ".from('order_items').insert",
+    "stock movements must not be written directly by browser code": ".from('stock_movements').insert",
+}
+for label, token in unsafe_pos_tokens.items():
+    if token in source:
+        raise SystemExit(f"FAIL: {label}")
+
+# The current order form is intentionally a basic order-header capture only;
+# do not let static CI imply it is a complete inventory-aware POS.
+if "async function orderSubmit(e)" not in source:
+    raise SystemExit("FAIL: order submission handler not found")
+
 print(f"PASS: parsed HTML and checked {len(parser.parts)} inline JavaScript block(s)")
 print("PASS: product deletion retains delegated handling, UUID validation, and user scoping")
+print("PASS: browser code does not call the unaudited POS RPC or bypass transactional order/stock writes")
