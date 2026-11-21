@@ -70,6 +70,30 @@ The inspected invitation functions use `auth.uid()` and `business_owner_id` memb
 5. Update the browser Order/POS form to call the canonical RPC and display the returned order id, total, and stock result only after success.
 6. Run browser E2E tests and verify the database records, then request explicit approval before production rollout.
 
+## Follow-up production metadata verification — 2026-11-21
+
+A later read-only inspection confirmed the current production schema contains the following additional facts:
+
+- `products` includes both legacy `stock` and `stock_quantity`; the POS function reads and updates `stock_quantity`. The UI product form currently inserts `stock: 0` and does not expose an initial `stock_quantity` field. This means new products may have no practical stock entry workflow in the current browser UI.
+- `orders` contains `customer_name` and `payment_method`; the browser order form currently does not persist either field.
+- `order_items` includes product snapshot, quantity, unit price, and line total. The current browser order form does not persist these fields.
+- The deployed POS function is granted EXECUTE to `authenticated` and `postgres`. This confirms it is callable by signed-in clients, so its validation must be treated as a security boundary.
+- The function definition confirms it trusts `p_unit_price`, accepts `pending` and `completed`, and decrements `stock_quantity` in both cases. It does not accept an idempotency key.
+- The current POS RPC is owner-user scoped (`user_id = auth.uid()`), not tenant/membership scoped. Team roles cannot safely be enabled by merely calling this function as a staff user.
+- The Storage bucket `User Uploads` is now present in production metadata as private, 10 MiB, JPEG/PNG/WebP. Existing `User Uplads` remains private and was not modified. Bucket metadata and policy presence have been checked read-only; real Storage API upload/download and cross-user denial tests remain NOT RUN.
+- The production Vercel alias still points to `main` commit `f815dc1d3789b645113b5fd00587ba9623254b0a`; the hardening branch is not live.
+
+### POS implementation gate
+
+Do not connect the current browser form directly to the existing RPC. Before integration, implement and test all of the following in a disposable database:
+1. Derive authoritative unit price from the tenant-owned product record (or implement a role-checked, audited override).
+2. Decide pending stock semantics. A safe default candidate is no stock deduction until the order transitions to a confirmed/completed sale; if stock reservation is needed, model reservations explicitly.
+3. Add an idempotency request key with a unique constraint and a replay-safe response.
+4. Add explicit business context and server-side active-membership/permission checks, or formally scope the product to single-owner mode and keep staff operations disabled.
+5. Validate quantity, currency precision, price bounds, customer tenant, product tenant, status transitions, and payment method on the server.
+6. Test concurrent sale attempts, insufficient stock, duplicate retries, transaction rollback, pending-to-completed transitions, and unauthorized callers.
+7. Only then connect the UI to the RPC and expose inventory fields.
+
 ## Test status
 
 - PostgreSQL integration tests: **NOT RUN**
