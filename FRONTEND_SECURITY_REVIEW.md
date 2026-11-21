@@ -58,6 +58,16 @@ This is a source review only. No production database writes, storage writes, dep
 - There is no reconciliation against refunds, partial payments, voids, tax, or line-item totals in this source.
 - Treat this as a simple recorded-order summary, not an accounting ledger or verified profit figure.
 
+## Remediation staged on the security branch
+
+### F-04 — Product delete event handling
+- Updated `index.html` on `security/rls-permissions-hardening` to remove the database-derived product ID from an inline JavaScript event handler.
+- Product rows now render a button with an escaped `data-product-id` attribute and use one delegated click listener.
+- The listener validates the ID against the expected UUID shape before calling the existing delete function.
+- The delete query still scopes by both product ID and `currentUser.id`; no authorization boundary was weakened.
+- Static checks on the fetched branch source: inline script syntax parse PASSED; delegated handler present; inline delete handler absent; UUID guard present; escaped data attribute present; owner-scoped delete filter preserved.
+- Browser interaction/E2E tests remain NOT RUN. This change is staged in the draft PR branch and has not been deployed.
+
 ## Positive controls observed
 - The browser client uses a Supabase publishable key, not a service-role key. A publishable key is intended for public clients; safety depends on correctly configured RLS and grants.
 - Product, customer, order, and finance inserts set the signed-in user's ID.
