@@ -56,7 +56,7 @@ for number, js in enumerate(parser.parts, 1):
 required = {
     "delegated product delete handler": "productRows.addEventListener('click'",
     "product action data attribute": 'data-action="delete-product"',
-    "UUID format validation": "!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(id)",
+    "UUID format validation": "!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)",
     "user-scoped product deletion": ".eq('user_id',currentUser.id)",
     "OCR upload MIME validation": "function validateImageFile(file)",
     "10 MiB client-side upload limit": "file.size>10*1024*1024",
