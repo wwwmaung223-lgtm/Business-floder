@@ -97,3 +97,15 @@ All inspected tables below have RLS enabled in the schema inventory.
 
 ## Deployment gate
 Keep PR #1 in draft until P0 checks and review are complete. Do not merge or deploy this branch as a claim that upload, POS inventory, or payment automation is complete.
+
+
+## Follow-up verification — authentication and frontend data integrity
+
+- The new POS guardrail commit `f20b2dd06345289f79403ceef90b4f5bb9d28f00` passed GitHub Actions run `44918469084` (frontend static checks). The check now fails if browser code calls the unaudited `northstar_create_pos_sale` RPC or directly inserts order-item/stock-movement rows. This is a guardrail, not a POS implementation or database test.
+- Authentication source review confirms email/password sign-up and sign-in exist, and sign-up displays an email-confirmation instruction when Supabase does not return a session. No password-reset flow is present in the frontend. Production Auth redirect/confirmation settings and real signup/login/logout flows remain unverified.
+- Cloud data load currently maps products, customers, orders, and expenses. OCR note load errors silently substitute browser-local notes, while the overall status still reports cloud connected; this can mislead users about where notes are stored. Add a distinct cloud/local status and explicit retry/sync path before launch.
+- Product creation currently writes legacy `stock: 0`, not the operational `stock_quantity` field, and provides no initial inventory entry. Do not enable stock-based selling until the product/inventory workflow is reconciled and tested.
+- The order form stores only an order header and resolves customer linkage by exact display-name match. It does not persist the selected product, quantity, item price, payment method, or order items. It must remain clearly labeled as a basic order record, not a completed POS sale.
+- Product deletion is user-scoped, but the frontend does not inspect dependent order-item/stock-movement references before deletion. Validate database foreign-key behavior and add a safe archive/blocked-delete workflow before production use.
+- The language toggle currently changes navigation labels only; it does not translate the full page, forms, validation messages, dialogs, or errors. Bilingual completeness remains a release task.
+- These findings are source-level review only. No live browser tests, password reset tests, storage API tests, user-data changes, schema changes, merge, or deployment were performed.
