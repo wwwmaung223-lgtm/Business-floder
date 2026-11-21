@@ -62,6 +62,8 @@ required = {
     "10 MiB client-side upload limit": "file.size>10*1024*1024",
     "OCR cloud/local status is tracked": "let ocrNotesCloudAvailable=true",
     "OCR fallback is disclosed to the user": "OCR notes are device-local until cloud access is restored.",
+    "basic order limitations are disclosed": "Basic order register only. This saves an order header;",
+    "order history does not expose customer UUIDs": "customer:o.customer_id?'Linked customer':'No linked customer',item:'Order record'",
 
     "restricted image picker types": 'accept="image/jpeg,image/png,image/webp"',
 }
