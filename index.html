@@ -585,6 +585,7 @@ const DBKEY='northstarBusinessOS_v06';
 const blank=()=>({products:[],orders:[],customers:[],expenses:[],notes:[]});
 let current=null,db=blank(),authMode='signup',currentUser=null;
 let cloudBusy=false;
+let ocrNotesCloudAvailable=true;
 
 function setCloudStatus(message,isError=false){
  const el=document.getElementById('cloudStatus');
@@ -654,11 +655,14 @@ async function loadCloudData(){
     if(notesError)throw notesError;
     db.notes=(cloudNotes||[]).map(n=>({id:n.id,text:n.content,date:n.created_at?new Date(n.created_at).toLocaleString():''}));
    }catch(noteErr){
+    ocrNotesCloudAvailable=false;
     db.notes=JSON.parse(localStorage.getItem(localKey()+'_notes')||'[]');
     console.warn('OCR cloud notes not ready:',noteErr.message);
    }
   saveLocalOnly();render();
-  setCloudStatus('Cloud connected · Products, customers, orders and finance loaded.');
+  setCloudStatus(ocrNotesCloudAvailable
+   ?'Cloud connected · Products, customers, orders, finance and OCR notes loaded.'
+   :'Cloud connected · Business records loaded; OCR notes are device-local until cloud access is restored.',!ocrNotesCloudAvailable);
  }catch(err){
   console.error('Cloud load failed:',err);
   setCloudStatus('Cloud database error: '+(err.message||'Could not load data'),true);
@@ -804,6 +808,7 @@ async function saveNote(){
  try{
   const {data,error}=await supabaseClient.from('ocr_notes').insert({user_id:currentUser.id,content}).select().single();
   if(error)throw error;
+  ocrNotesCloudAvailable=true;
   db.notes.unshift({id:data.id,text:data.content,date:data.created_at?new Date(data.created_at).toLocaleString():new Date().toLocaleString()});
   ocrtext.value='';render();alert('OCR note saved to Supabase Cloud.');
  }catch(err){
