@@ -2,7 +2,6 @@
 """Dependency-free static checks for Northstar's single-file frontend."""
 from html.parser import HTMLParser
 from pathlib import Path
-import re
 import subprocess
 import tempfile
 
@@ -55,13 +54,13 @@ for number, js in enumerate(parser.parts, 1):
             raise SystemExit(f"FAIL: inline script block {number} has a syntax error")
 
 required = {
-    "delegated product delete handler": r"productRows\\.addEventListener\\(\\s*['\"]click['\"]",
-    "product action data attribute": r"data-action=\\\"delete-product\\\"",
-    "UUID format validation": r"8\\}-\\{4\\}-\\{4\\}-\\{4\\}-\\{12",
-    "user-scoped product deletion": r"\\.eq\\(\\s*['\"]user_id['\"]\\s*,\\s*currentUser\\.id\\s*\\)",
+    "delegated product delete handler": "productRows.addEventListener('click'",
+    "product action data attribute": 'data-action="delete-product"',
+    "UUID format validation": "!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(id)",
+    "user-scoped product deletion": ".eq('user_id',currentUser.id)",
 }
-for label, pattern in required.items():
-    if not re.search(pattern, source):
+for label, token in required.items():
+    if token not in source:
         raise SystemExit(f"FAIL: missing invariant: {label}")
 
 print(f"PASS: parsed HTML and checked {len(parser.parts)} inline JavaScript block(s)")
