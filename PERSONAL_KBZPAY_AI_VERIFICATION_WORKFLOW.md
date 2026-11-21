@@ -112,12 +112,18 @@ Explain payment steps and status in Burmese and English. Never ask for PIN, OTP,
 
 RLS lets customers create/read only their own intent/submission. Customers cannot write confirmation, paid status, amount snapshot, or subscription status. A server-only function inserts confirmations and activates the plan atomically. Add uniqueness constraints and audit records. Avoid storing full bank account numbers or unnecessary payer data.
 
-## Personal-account interim limitation
+## Personal-account interim operating mode
 
-Without an official transaction feed, no agent can independently know that the owner's personal wallet received the money. Options:
-- safest interim: OCR triage + pending status; recipient checks KBZPay transaction history;
-- better: ask KBZPay/KBZ Bank about merchant/partner onboarding and approved reconciliation/API access;
-- if the bank provides a downloadable recipient transaction history, use a controlled CSV import with restricted access; do not scrape the app or automatically read private SMS.
+Use the owner's existing personal KBZPay QR temporarily for a limited pilot while merchant/API eligibility is investigated. Treat this as a temporary collection method, not a verified merchant integration.
+
+Interim flow:
+1. Customer pays the exact amount to the personal KBZPay QR and submits the receipt plus last six reference characters.
+2. OCR and deterministic matching run automatically. The agents can extract, compare, detect duplicates, and flag suspicious or unreadable submissions; they do not declare funds received.
+3. The system remains `pending_confirmation` until the matching incoming credit is visible in the recipient's KBZPay transaction history or a trusted bank-provided record is imported.
+4. To avoid manually inspecting customer receipts, the owner only needs to confirm the incoming transaction in their own account history for the pilot. If a bank-provided CSV/export becomes available, the reconciliation agent can match that record automatically.
+5. Only after recipient-side confirmation does the server activate the subscription.
+
+Without an official transaction feed, no agent can independently know that the owner's personal wallet received the money. Do not promise fully automatic payment verification yet. Never scrape the app, automate login, or request PIN/OTP. Ask KBZPay/KBZ Bank about merchant/partner onboarding and approved reconciliation/API access.
 
 KBZPay's customer app listing describes receipt QR verification features. This may help verify a receipt in the app, but it is not evidence of an API or automatic recipient-side settlement confirmation:
 https://play.google.com/store/apps/details?id=com.kbzbank.kpaycustomer
@@ -152,8 +158,9 @@ Official support email listed by KBZPay: query@kbzpay.com. Never send PIN/OTP or
 
 ## Current status
 
-- Owner confirmed personal KBZPay account.
+- Owner confirmed personal KBZPay account as the temporary payment method.
 - QR was provided in chat; it must not be copied into a public repository.
+- Interim pilot flow updated: AI performs receipt OCR/reference screening; recipient-side incoming credit confirmation remains required before activation.
 - Workflow specified; no code, schema, storage, payment, or production settings changed.
 - Merchant API availability for this personal account: NOT VERIFIED.
 - Automatic bank-side reconciliation: NOT AVAILABLE until KBZ confirms an approved feed/API or partner facility.
