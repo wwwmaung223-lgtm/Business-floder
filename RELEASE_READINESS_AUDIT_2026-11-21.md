@@ -85,5 +85,15 @@ All inspected tables below have RLS enabled in the schema inventory.
 - This success covers HTML parsing, inline JavaScript syntax, and the existing frontend invariants only. It does not replace browser E2E, real Storage API upload/download, two-user isolation, or POS transaction tests.
 - PR #1 remains draft. No production schema changes, data writes, merge, or deployment were performed.
 
+## Follow-up verification — POS, RLS, Storage, CI
+
+- GitHub Actions frontend static-check run `44917928590` completed successfully for commit `718d962b1865ad349728cbbf9d5db9be42ca0dff`.
+- Read-only Storage policy verification confirms authenticated INSERT, SELECT, UPDATE, and DELETE policies for `User Uploads`, each scoped to the first object-path folder matching `auth.uid()`. This verifies policy metadata only, not a real API request.
+- Read-only function ACL inspection confirms `northstar_create_pos_sale` and `northstar_adjust_stock` are executable by authenticated users. Their current implementation is not yet safe for full POS/team rollout: caller-supplied sale price, pending status still deducts stock, no idempotency key, and owner-user rather than explicit tenant membership scope.
+- Schema review confirms product stock uses `stock_quantity`, while the current browser product form initializes legacy `stock` and does not provide a stock entry flow. The browser order form also does not persist order line items, quantity, customer snapshot, or payment method.
+- The existing product/customer/order/finance RLS policy sets contain redundant permissive owner policies. They remain owner-scoped today, but a future tenant policy must replace the whole relevant policy set rather than be appended alongside broad `FOR ALL` rules.
+- Production deployment remains on `main` commit `f815dc1d3789b645113b5fd00587ba9623254b0a`; hardening branch remains draft PR #1 and is not live.
+- No production database mutation, migration, user data change, merge, or deployment was performed.
+
 ## Deployment gate
 Keep PR #1 in draft until P0 checks and review are complete. Do not merge or deploy this branch as a claim that upload, POS inventory, or payment automation is complete.
