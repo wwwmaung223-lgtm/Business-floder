@@ -109,3 +109,12 @@ Keep PR #1 in draft until P0 checks and review are complete. Do not merge or dep
 - Product deletion is user-scoped, but the frontend does not inspect dependent order-item/stock-movement references before deletion. Validate database foreign-key behavior and add a safe archive/blocked-delete workflow before production use.
 - The language toggle currently changes navigation labels only; it does not translate the full page, forms, validation messages, dialogs, or errors. Bilingual completeness remains a release task.
 - These findings are source-level review only. No live browser tests, password reset tests, storage API tests, user-data changes, schema changes, merge, or deployment were performed.
+
+
+## Follow-up fix — honest OCR cloud/local status
+
+- Updated `index.html` so a failed OCR-notes cloud read no longer ends with an unconditional green “Cloud connected” status. The workspace now explicitly warns that OCR notes are device-local until cloud access is restored; successful cloud reads show OCR notes as loaded.
+- Successful OCR note writes mark cloud availability restored for the current session.
+- Added static CI invariants for the cloud/local status flag and user-visible fallback disclosure.
+- GitHub Actions run `44919649000` passed on commit `ca0a3abcbe3343f9f925f6f84f739d600df6be13` (HTML parsing, inline JavaScript syntax, and source invariants).
+- This is a source/static validation only. No live browser, Supabase API, storage, or user-account test was run; no production deployment or database mutation was performed.
