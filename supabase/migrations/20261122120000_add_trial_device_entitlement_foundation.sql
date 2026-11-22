@@ -108,6 +108,7 @@ declare
   v_type_count integer;
   v_existing public.account_devices%rowtype;
   v_addon_slots integer := 0;
+  v_is_admin boolean := false;
 begin
   if v_user is null or v_session is null then
     raise exception 'Authenticated session required' using errcode = '42501';
@@ -284,12 +285,14 @@ $$;
 revoke all on function public.ensure_account_pos_trial() from public, anon;
 revoke all on function public.register_account_device(uuid,text,text) from public, anon;
 revoke all on function public.revoke_account_device(uuid) from public, anon;
-revoke all on function public.current_account_device_is_active() from public, anon;\nrevoke all on function public.request_extra_device_slot() from public, anon;\nrevoke all on function public.review_extra_device_slot(uuid,boolean,text) from public, anon;
+revoke all on function public.current_account_device_is_active() from public, anon;
+revoke all on function public.request_extra_device_slot() from public, anon;\nrevoke all on function public.review_extra_device_slot(uuid,boolean,text) from public, anon;
 revoke all on function public.get_account_entitlements() from public, anon;
 grant execute on function public.ensure_account_pos_trial() to authenticated;
 grant execute on function public.register_account_device(uuid,text,text) to authenticated;
 grant execute on function public.revoke_account_device(uuid) to authenticated;
-grant execute on function public.current_account_device_is_active() to authenticated;\ngrant execute on function public.request_extra_device_slot() to authenticated;\ngrant execute on function public.review_extra_device_slot(uuid,boolean,text) to authenticated;
+grant execute on function public.current_account_device_is_active() to authenticated;
+grant execute on function public.request_extra_device_slot() to authenticated;\ngrant execute on function public.review_extra_device_slot(uuid,boolean,text) to authenticated;
 grant execute on function public.get_account_entitlements() to authenticated;
 
 comment on table public.account_pos_trials is 'One immutable 15-day POS trial per user; created on first authenticated activation.';
