@@ -170,7 +170,7 @@ returns uuid
 language plpgsql
 security definer
 set search_path = ''
-as $
+as $$
 declare v_user uuid := auth.uid(); v_id uuid;
 begin
   if v_user is null then raise exception 'Authentication required' using errcode='42501'; end if;
@@ -179,7 +179,7 @@ begin
   returning id into v_id;
   return v_id;
 end;
-$;
+$$;
 
 create or replace function public.review_extra_device_slot(
   p_addon_id uuid,
@@ -190,7 +190,7 @@ returns boolean
 language plpgsql
 security definer
 set search_path = ''
-as $
+as $$
 declare v_admin uuid := auth.uid();
 begin
   if v_admin is null or not exists(select 1 from public.platform_admins a where a.user_id=v_admin) then
@@ -215,7 +215,7 @@ begin
     from public.subscription_addons a where a.id=p_addon_id;
   return true;
 end;
-$;
+$$;
 
 create or replace function public.current_account_device_is_active()
 returns boolean
@@ -286,13 +286,13 @@ revoke all on function public.ensure_account_pos_trial() from public, anon;
 revoke all on function public.register_account_device(uuid,text,text) from public, anon;
 revoke all on function public.revoke_account_device(uuid) from public, anon;
 revoke all on function public.current_account_device_is_active() from public, anon;
-revoke all on function public.request_extra_device_slot() from public, anon;\nrevoke all on function public.review_extra_device_slot(uuid,boolean,text) from public, anon;
+revoke all on function public.request_extra_device_slot() from public, anon;revoke all on function public.review_extra_device_slot(uuid,boolean,text) from public, anon;
 revoke all on function public.get_account_entitlements() from public, anon;
 grant execute on function public.ensure_account_pos_trial() to authenticated;
 grant execute on function public.register_account_device(uuid,text,text) to authenticated;
 grant execute on function public.revoke_account_device(uuid) to authenticated;
 grant execute on function public.current_account_device_is_active() to authenticated;
-grant execute on function public.request_extra_device_slot() to authenticated;\ngrant execute on function public.review_extra_device_slot(uuid,boolean,text) to authenticated;
+grant execute on function public.request_extra_device_slot() to authenticated;grant execute on function public.review_extra_device_slot(uuid,boolean,text) to authenticated;
 grant execute on function public.get_account_entitlements() to authenticated;
 
 comment on table public.account_pos_trials is 'One immutable 15-day POS trial per user; created on first authenticated activation.';
