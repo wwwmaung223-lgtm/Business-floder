@@ -1,5 +1,5 @@
 # NORTHSTAR BUSINESS OS — Subscription, Trial & Device Policy
-**Status:** Proposed product specification for owner review; not applied to Production.
+**Status:** Owner-approved product specification; development implementation in progress on the security branch; not applied to Production.
 **Target:** Myanmar small businesses; MMK pricing; $0 implementation budget.
 **Source of truth inspected:** Production `plans` and `plan_features` catalog (read-only), current revenue model, tenant architecture, and POS review on 2026-11-22.
 
@@ -66,7 +66,7 @@ A phone plus a laptop can be active at the same time. A second phone or second c
 - Apply rate limits and audit events to device enrollment, replacement and revocation. Provide a recovery flow for lost/broken devices.
 
 ### Additional-device add-on
-The owner proposed **11,000 MMK** to expand the device allowance. The billing period is not yet specified and must be confirmed before implementation or advertising. The add-on should increase the relevant device slot count by one; it must not silently grant staff seats, extra businesses, branches or plan features.
+The owner approved **11,000 MMK per month** for each additional device slot. The add-on is a monthly recurring entitlement and must be renewed with the billing cycle; when the add-on expires or is cancelled, the allowance returns to the included slots after any active extra device is explicitly selected for removal. The add-on should increase the device allowance by one slot; it must not silently grant staff seats, extra businesses, branches or plan features. Do not charge or activate it until the payment is verified and approved server-side.
 
 ## 4. Trial lifecycle
 
@@ -110,11 +110,11 @@ The owner proposed **11,000 MMK** to expand the device allowance. The billing pe
 
 ## 8. Decisions still needed
 
-1. **11,000 MMK add-on billing:** one-time purchase, monthly recurring, or per-year? Do not implement until confirmed.
-2. **Device slot transfer:** default proposal is account owner self-service revoke + register, with admin-assisted recovery only for lost-device cases.
-3. **Trial coverage:** this spec proposes the full paid POS feature set for 15 days, then POS and other paid-only features lock. Confirm if trial should include all Business-level features or only POS + core inventory.
-4. **Annual plans:** not included in this first specification; existing catalog is monthly. Add annual discounts only after the monthly flow works.
+1. **Device add-on billing — approved:** 11,000 MMK per additional device slot per month.
+2. **Device slot transfer — approved default:** account owner self-service revoke + register, with admin-assisted recovery only for lost-device cases.
+3. **Trial coverage — approved default:** full Business-level POS-capable feature set for 15 days, then POS and other paid-only features lock. Trial still obeys the standard two-device rule.
+4. **Annual plans:** not included in this first release; existing catalog is monthly. Add annual discounts only after the monthly flow works.
 
 ## 9. Change control
 
-This document is a product specification only. It does not modify Production prices, plan features, subscriptions, Auth settings, device sessions, POS behavior or deployments. Implement in stages on the security branch, test with synthetic users, then request explicit approval before any Production rollout.
+This document records the owner's approved product rules. Development implementation is authorized on the security branch. It does not authorize applying schema changes to Production, changing live subscriptions, altering live Auth settings, charging customers, merging the PR, or deploying the frontend to Production. Implement in stages, test with synthetic users, and request separate explicit approval before Production rollout.
