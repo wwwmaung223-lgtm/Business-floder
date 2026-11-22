@@ -2,7 +2,7 @@
 
 Date: 2026-11-22
 Branch: `security/rls-permissions-hardening`
-Status: Development foundation committed; not deployed or applied to Production.
+Status: Development foundation and Account & Devices UI committed; not yet validated against an isolated PostgreSQL environment or applied to Production.
 
 ## Owner-approved behavior
 
@@ -27,12 +27,12 @@ Migration: `20261122120000_add_trial_device_entitlement_foundation.sql`
 - `request_extra_device_slot()`: creates a pending one-slot monthly add-on request.
 - `review_extra_device_slot()`: platform-admin approval/rejection; approval requires a merchant transaction reference and grants one month.
 - `current_account_device_is_active()`: session/device guard helper for future use by protected RLS policies and mutation RPCs.
-- `get_account_entitlements()`: trial, plan, add-on and device summary.
+- `get_account_entitlements()`: trial, plan, add-on and device summary.\n- Device registration is serialized per account with a transaction-scoped advisory lock to prevent concurrent slot-limit races.\n- SQL function dollar-quote delimiters and grant statement line breaks were corrected in the latest migration review.
 
 ## Important limitations — not launch-ready
 
 1. This migration is only committed to GitHub. It has not been applied to the connected Supabase Production project or any isolated staging database.
-2. The current single-file frontend does not yet register devices, show a device-management screen, submit add-on payment evidence, or display trial countdown.
+2. The Account & Devices frontend now registers the current browser/device session, displays plan/trial/device status, lists devices, supports revocation, and creates pending add-on requests. It does not collect payment references or evidence; approval remains an administrator-only manual verification workflow.
 3. Existing business-data RLS policies and POS/stock mutation RPCs have not yet been changed to call `current_account_device_is_active()` and the trial/plan entitlement resolver. The helper alone does not enforce a device cap across the application.
 4. The existing POS flow is incomplete. Trial expiry cannot be considered enforced until every protected POS and stock mutation is guarded server-side.
 5. Admin bypass is implemented in the new device registration and entitlement resolver only; every protected operation still needs a consistent admin-aware authorization check.
