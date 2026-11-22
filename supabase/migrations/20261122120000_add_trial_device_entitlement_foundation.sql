@@ -105,6 +105,7 @@ declare
   v_session uuid := nullif(auth.jwt()->>'session_id','')::uuid;
   v_limit integer := 2;
   v_active_count integer;
+  v_type_count integer;
   v_existing public.account_devices%rowtype;
   v_addon_slots integer := 0;
 begin
@@ -117,10 +118,10 @@ begin
   end if;
 
   select * into v_existing from public.account_devices d
-   where d.user_id=v_user and d.device_key=p_device_key and d.auth_session_id=v_session
-     and d.revoked_at is null;
+   where d.user_id=v_user and d.device_key=p_device_key and d.revoked_at is null
+   order by d.registered_at desc limit 1;
   if found then
-    update public.account_devices set last_seen_at=now(), device_label=trim(p_device_label)
+    update public.account_devices set last_seen_at=now(), device_label=trim(p_device_label), auth_session_id=v_session
      where id=v_existing.id;
     return jsonb_build_object('registered',true,'device_id',v_existing.id,'already_registered',true);
   end if;
@@ -133,7 +134,9 @@ begin
 
   select count(*)::integer into v_active_count from public.account_devices d
    where d.user_id=v_user and d.revoked_at is null;
-  if v_active_count >= v_limit then
+  select count(*)::integer into v_type_count from public.account_devices d
+   where d.user_id=v_user and d.device_type=p_device_type and d.revoked_at is null;
+  if v_active_count >= v_limit or v_type_count >= 1 + v_addon_slots then
     raise exception 'Device limit reached. Revoke an existing device or purchase an extra device slot.' using errcode='P0001';
   end if;
 
@@ -188,7 +191,7 @@ declare
   v_user uuid := auth.uid();
   v_admin boolean := false;
   v_trial public.account_pos_trials%rowtype;
-  v_plan text := 'free';
+  v_plan text;
   v_sub_end timestamptz;
   v_addon_slots integer := 0;
   v_device_count integer := 0;
@@ -199,7 +202,7 @@ begin
   select * into v_trial from public.account_pos_trials where user_id=v_user;
   select s.plan_code,s.ends_at into v_plan,v_sub_end
     from public.subscriptions s
-   where s.user_id=v_user and s.status='active'
+   where s.user_id=v_user and s.status='active' and s.plan_code <> 'free'
      and (s.ends_at is null or s.ends_at > now())
    order by s.starts_at desc limit 1;
   select coalesce(sum(a.quantity),0)::integer into v_addon_slots
