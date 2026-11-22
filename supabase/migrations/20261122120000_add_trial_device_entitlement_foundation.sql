@@ -112,6 +112,7 @@ begin
   if v_user is null or v_session is null then
     raise exception 'Authenticated session required' using errcode = '42501';
   end if;
+  select exists(select 1 from public.platform_admins a where a.user_id=v_user) into v_is_admin;
   if p_device_key is null or p_device_type not in ('phone','computer')
      or p_device_label is null or length(trim(p_device_label)) not between 1 and 80 then
     raise exception 'Invalid device details' using errcode = '22023';
@@ -136,7 +137,7 @@ begin
    where d.user_id=v_user and d.revoked_at is null;
   select count(*)::integer into v_type_count from public.account_devices d
    where d.user_id=v_user and d.device_type=p_device_type and d.revoked_at is null;
-  if v_active_count >= v_limit or v_type_count >= 1 + v_addon_slots then
+  if not v_is_admin and (v_active_count >= v_limit or v_type_count >= 1 + v_addon_slots) then
     raise exception 'Device limit reached. Revoke an existing device or purchase an extra device slot.' using errcode='P0001';
   end if;
 
@@ -162,6 +163,58 @@ begin
   return found;
 end;
 $$;
+
+create or replace function public.request_extra_device_slot()
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $
+declare v_user uuid := auth.uid(); v_id uuid;
+begin
+  if v_user is null then raise exception 'Authentication required' using errcode='42501'; end if;
+  insert into public.subscription_addons(user_id,addon_code,quantity,amount_mmk,billing_period,status)
+  values(v_user,'extra_device_slot',1,11000,'monthly','pending')
+  returning id into v_id;
+  return v_id;
+end;
+$;
+
+create or replace function public.review_extra_device_slot(
+  p_addon_id uuid,
+  p_approve boolean,
+  p_payment_reference text default null
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $
+declare v_admin uuid := auth.uid();
+begin
+  if v_admin is null or not exists(select 1 from public.platform_admins a where a.user_id=v_admin) then
+    raise exception 'Platform administrator required' using errcode='42501';
+  end if;
+  if p_approve and (p_payment_reference is null or length(trim(p_payment_reference)) < 4) then
+    raise exception 'Verified merchant transaction reference required' using errcode='22023';
+  end if;
+  update public.subscription_addons
+     set status=case when p_approve then 'active' else 'rejected' end,
+         payment_reference=case when p_approve then trim(p_payment_reference) else payment_reference end,
+         starts_at=case when p_approve then now() else starts_at end,
+         ends_at=case when p_approve then now()+interval '1 month' else ends_at end,
+         approved_by=v_admin, updated_at=now()
+   where id=p_addon_id and status='pending';
+  if not found then return false; end if;
+  insert into public.audit_logs(user_id,actor_id,action,entity,entity_id,details)
+  select a.user_id,v_admin,
+         case when p_approve then 'device_addon_approved' else 'device_addon_rejected' end,
+         'subscription_addon',a.id::text,
+         jsonb_build_object('amount_mmk',a.amount_mmk,'quantity',a.quantity,'billing_period',a.billing_period)
+    from public.subscription_addons a where a.id=p_addon_id;
+  return true;
+end;
+$;
 
 create or replace function public.current_account_device_is_active()
 returns boolean
@@ -231,12 +284,12 @@ $$;
 revoke all on function public.ensure_account_pos_trial() from public, anon;
 revoke all on function public.register_account_device(uuid,text,text) from public, anon;
 revoke all on function public.revoke_account_device(uuid) from public, anon;
-revoke all on function public.current_account_device_is_active() from public, anon;
+revoke all on function public.current_account_device_is_active() from public, anon;\nrevoke all on function public.request_extra_device_slot() from public, anon;\nrevoke all on function public.review_extra_device_slot(uuid,boolean,text) from public, anon;
 revoke all on function public.get_account_entitlements() from public, anon;
 grant execute on function public.ensure_account_pos_trial() to authenticated;
 grant execute on function public.register_account_device(uuid,text,text) to authenticated;
 grant execute on function public.revoke_account_device(uuid) to authenticated;
-grant execute on function public.current_account_device_is_active() to authenticated;
+grant execute on function public.current_account_device_is_active() to authenticated;\ngrant execute on function public.request_extra_device_slot() to authenticated;\ngrant execute on function public.review_extra_device_slot(uuid,boolean,text) to authenticated;
 grant execute on function public.get_account_entitlements() to authenticated;
 
 comment on table public.account_pos_trials is 'One immutable 15-day POS trial per user; created on first authenticated activation.';
