@@ -27,7 +27,9 @@ Migration: `20261122120000_add_trial_device_entitlement_foundation.sql`
 - `request_extra_device_slot()`: creates a pending one-slot monthly add-on request.
 - `review_extra_device_slot()`: platform-admin approval/rejection; approval requires a merchant transaction reference and grants one month.
 - `current_account_device_is_active()`: session/device guard helper for future use by protected RLS policies and mutation RPCs.
-- `get_account_entitlements()`: trial, plan, add-on and device summary.\n- Device registration is serialized per account with a transaction-scoped advisory lock to prevent concurrent slot-limit races.\n- SQL function dollar-quote delimiters and grant statement line breaks were corrected in the latest migration review.
+- `get_account_entitlements()`: trial, plan, add-on and device summary.
+- Device registration is serialized per account with a transaction-scoped advisory lock to prevent concurrent slot-limit races.
+- SQL function dollar-quote delimiters and grant statement line breaks were corrected in the latest migration review.
 
 ## Important limitations — not launch-ready
 
