@@ -119,6 +119,8 @@ begin
     raise exception 'Invalid device details' using errcode = '22023';
   end if;
 
+  -- Serialize registrations per account so concurrent requests cannot exceed slot limits.
+  perform pg_advisory_xact_lock(hashtextextended(v_user::text, 0));
   select * into v_existing from public.account_devices d
    where d.user_id=v_user and d.device_key=p_device_key and d.revoked_at is null
    order by d.registered_at desc limit 1;
@@ -286,13 +288,15 @@ revoke all on function public.ensure_account_pos_trial() from public, anon;
 revoke all on function public.register_account_device(uuid,text,text) from public, anon;
 revoke all on function public.revoke_account_device(uuid) from public, anon;
 revoke all on function public.current_account_device_is_active() from public, anon;
-revoke all on function public.request_extra_device_slot() from public, anon;revoke all on function public.review_extra_device_slot(uuid,boolean,text) from public, anon;
+revoke all on function public.request_extra_device_slot() from public, anon;
+revoke all on function public.review_extra_device_slot(uuid,boolean,text) from public, anon;
 revoke all on function public.get_account_entitlements() from public, anon;
 grant execute on function public.ensure_account_pos_trial() to authenticated;
 grant execute on function public.register_account_device(uuid,text,text) to authenticated;
 grant execute on function public.revoke_account_device(uuid) to authenticated;
 grant execute on function public.current_account_device_is_active() to authenticated;
-grant execute on function public.request_extra_device_slot() to authenticated;grant execute on function public.review_extra_device_slot(uuid,boolean,text) to authenticated;
+grant execute on function public.request_extra_device_slot() to authenticated;
+grant execute on function public.review_extra_device_slot(uuid,boolean,text) to authenticated;
 grant execute on function public.get_account_entitlements() to authenticated;
 
 comment on table public.account_pos_trials is 'One immutable 15-day POS trial per user; created on first authenticated activation.';
