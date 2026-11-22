@@ -515,7 +515,8 @@ button:focus-visible,[data-page]:focus-visible{outline:2px solid #e6bb94;outline
    <button data-page="marketing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14V8l14-4v16L4 16v-2ZM4 14l3 7h4l-2-6M18 9h3v4h-3"/></svg><span>Marketing</span></button>
    <button data-page="finance"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h3M8 16h6"/></svg><span>Finance</span></button>
    <button data-page="tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg><span>AI & OCR</span></button>
-  </nav>
+  
+   <button type="button" data-page="account">◉ Account & Devices</button></nav>
   <div class="sidebar-bottom">Northstar Business OS · v1.4.1<br><span id="sidebarUser">Local demo</span></div>
  </aside>
  <main class="main">
@@ -545,7 +546,33 @@ button:focus-visible,[data-page]:focus-visible{outline:2px solid #e6bb94;outline
   <section class="section" id="customers"><div class="panel"><h3>Customer directory</h3><form id="customerForm"><div class="formgrid"><div class="field"><label>Name</label><input id="cname" required></div><div class="field"><label>Email / phone / social handle</label><input id="ccontact"></div></div><button>Add customer</button></form><div class="tablewrap"><table><thead><tr><th>Name</th><th>Contact</th><th>Added</th></tr></thead><tbody id="customerRows"></tbody></table></div></div></section>
   <section class="section" id="marketing"><div class="panel"><h3>Marketing brief builder</h3><div class="field"><label>Product / service</label><input id="mproduct" placeholder="What are you promoting?"></div><div class="field"><label>Target audience</label><input id="maudience" placeholder="Who needs it?"></div><div class="formgrid"><div class="field"><label>Platform</label><select id="mplatform"><option>Facebook</option><option>TikTok</option><option>Instagram</option><option>LinkedIn</option><option>Email</option></select></div><div class="field"><label>Campaign goal</label><select id="mgoal"><option>Awareness</option><option>Engagement</option><option>Sales</option><option>Leads</option></select></div></div><button onclick="makeBrief()">Generate brief</button><div class="field"><label>Campaign brief · Burmese + English ready</label><textarea id="mdraft" rows="9" placeholder="Your campaign brief will appear here..."></textarea></div><button class="secondary" onclick="copyBrief()">Copy brief</button><p class="small">This creates a structured brief, not AI-generated claims or testimonials.</p></div></section>
   <section class="section" id="finance"><div class="panel"><h3>Finance tracker</h3><div class="formgrid"><div class="field"><label>Expense description</label><input id="edesc" placeholder="Internet, tools, delivery..."></div><div class="field"><label>Amount · MMK</label><input id="eamount" type="number" min="0"></div></div><button onclick="addExpense()">Add expense</button><div class="grid4"><div class="card"><div class="metric-label">Paid revenue</div><div class="metric" id="rev">0</div></div><div class="card"><div class="metric-label">Expenses</div><div class="metric" id="exp">0</div></div><div class="card"><div class="metric-label">Net recorded</div><div class="metric" id="net">0</div></div></div><div class="tablewrap"><table><thead><tr><th>Expense</th><th>Amount · MMK</th></tr></thead><tbody id="expenseRows"></tbody></table></div></div></section>
-  <section class="section" id="tools"><div class="panel"><h3>Photo OCR · ဓာတ်ပုံမှ စာသားဖတ်ရန်</h3><div class="notice">Choose a receipt, document or product photo. OCR runs in your browser using Tesseract.js. English and Myanmar are supported; accuracy depends on image quality and handwriting may not read correctly.</div><div class="field"><label>Choose image / ဓာတ်ပုံရွေးပါ</label><input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp"></div><div class="row"><button type="button" id="runOcrBtn" onclick="runOCR()">✧ Extract text / စာသားဖတ်မယ်</button><select id="ocrLang" aria-label="OCR language"><option value="eng+mya">English + Myanmar</option><option value="eng">English only</option><option value="mya">Myanmar only</option></select><button type="button" class="secondary" id="uploadImageBtn" onclick="uploadImage()">Upload to cloud</button><span id="uploadStatus" class="small">Sign in to upload.</span></div><div id="ocrProgress" class="small" role="status" style="margin:10px 0"></div><img id="preview" style="display:none;max-width:100%;max-height:340px;border-radius:14px;margin-top:12px"><div class="field" style="margin-top:14px"><label>Extracted text / ရရှိလာသောစာသား</label><textarea id="ocrtext" rows="7" placeholder="OCR text will appear here. You can edit it before saving..."></textarea></div><div class="row"><button onclick="saveNote()">Save note / မှတ်တမ်းသိမ်းမယ်</button><button class="secondary" type="button" onclick="copyOCRText()">Copy text</button></div><div id="savedNotes" class="content-list" style="margin-top:12px"></div></div></section>
+  <section class="section" id="tools"><div class="panel"><h3>Photo OCR · ဓာတ်ပုံမှ စာသားဖတ်ရန်</h3><div class="notice">Choose a receipt, document or product photo. OCR runs in your browser using Tesseract.js. English and Myanmar are supported; accuracy depends on image quality and handwriting may not read correctly.</div><div class="field"><label>Choose image / ဓာတ်ပုံရွေးပါ</label><input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp"></div><div class="row"><button type="button" id="runOcrBtn" onclick="runOCR()">✧ Extract text / စာသားဖတ်မယ်</button><select id="ocrLang" aria-label="OCR language"><option value="eng+mya">English + Myanmar</option><option value="eng">English only</option><option value="mya">Myanmar only</option></select><button type="button" class="secondary" id="uploadImageBtn" onclick="uploadImage()">Upload to cloud</button><span id="uploadStatus" class="small">Sign in to upload.</span></div><div id="ocrProgress" class="small" role="status" style="margin:10px 0"></div><img id="preview" style="display:none;max-width:100%;max-height:340px;border-radius:14px;margin-top:12px"><div class="field" style="margin-top:14px"><label>Extracted text / ရရှိလာသောစာသား</label><textarea id="ocrtext" rows="7" placeholder="OCR text will appear here. You can edit it before saving..."></textarea></div><div class="row"><button onclick="saveNote()">Save note / မှတ်တမ်းသိမ်းမယ်</button><button class="secondary" type="button" onclick="copyOCRText()">Copy text</button></div><div id="savedN  <section class="section" id="account">
+   <div class="panel">
+    <div class="eyebrow">ACCOUNT SECURITY / SUBSCRIPTION</div>
+    <h3>Plan, trial & device access</h3>
+    <p class="page-sub">Your account access and registered devices. / အကောင့်၊ Trial နှင့် ချိတ်ဆက်ထားသော Device များ</p>
+    <div class="grid4" style="margin-top:16px">
+     <div class="admin-tile"><b id="accountPlan">—</b><span>Current plan</span></div>
+     <div class="admin-tile"><b id="accountTrial">—</b><span>POS trial status</span></div>
+     <div class="admin-tile"><b id="accountDevices">—</b><span>Active devices</span></div>
+     <div class="admin-tile"><b>11,000 MMK</b><span>Extra device slot / month</span></div>
+    </div>
+    <div class="notice" id="accountAccessStatus" role="status">Checking account entitlements…</div>
+   </div>
+   <div class="panel" style="margin-top:15px">
+    <div class="row" style="justify-content:space-between"><h3>Registered devices</h3><button type="button" class="secondary" onclick="refreshAccountSecurity()">↻ Refresh</button></div>
+    <p class="small">One phone + one computer are included. Revoke a device before registering its replacement. A revoked session must sign in again.</p>
+    <div class="tablewrap"><table><thead><tr><th>Device</th><th>Type</th><th>Last active</th><th>Status</th><th></th></tr></thead><tbody id="accountDeviceRows"><tr><td colspan="5" class="empty">Device information will appear after account security setup.</td></tr></tbody></table></div>
+   </div>
+   <div class="panel" style="margin-top:15px">
+    <h3>Extra device slot</h3>
+    <p>11,000 MMK per additional device slot, billed monthly. This adds device capacity only; it does not change staff, branch, or plan feature limits.</p>
+    <div class="notice">Submit a request to the platform team. The add-on stays pending until the merchant transaction is independently verified. A payment screenshot alone does not activate it.</div>
+    <button type="button" id="requestDeviceSlotBtn" onclick="requestExtraDeviceSlot()">Request extra device slot · 11,000 MMK/month</button>
+    <p class="small" id="deviceAddonStatus" role="status" style="margin-top:10px"></p>
+   </div>
+  </section>
+otes" class="content-list" style="margin-top:12px"></div></div></section>
   <section class="section" id="owner">
     <div class="panel">
      <div class="eyebrow">OWNER ONLY · PRIVATE CONTROL CENTER</div><h3>Platform overview</h3>
@@ -771,6 +798,71 @@ async function loadCloudData(){
   alert('Cloud database could not load: '+(err.message||'Unknown error')+'. Check table policies and columns.');
  }
 }
+const ACCOUNT_DEVICE_KEY='northstar_device_key_v1';
+function accountDeviceKey(){
+ let key=localStorage.getItem(ACCOUNT_DEVICE_KEY);
+ if(!key){key=crypto.randomUUID();localStorage.setItem(ACCOUNT_DEVICE_KEY,key);}
+ return key;
+}
+function accountDeviceType(){
+ return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)?'phone':'computer';
+}
+function accountDeviceLabel(){
+ const type=accountDeviceType();
+ const ua=navigator.userAgent;
+ const os=/Android/i.test(ua)?'Android':/iPhone|iPad|iPod/i.test(ua)?'iOS':/Windows/i.test(ua)?'Windows':/Mac OS/i.test(ua)?'macOS':/Linux/i.test(ua)?'Linux':'Unknown OS';
+ return (type==='phone'?'Phone':'Computer')+' · '+os;
+}
+function setAccountStatus(message,isError=false){
+ const el=document.getElementById('accountAccessStatus');
+ if(el){el.textContent=message;el.style.color=isError?'#d65b5b':'var(--muted)';}
+}
+async function refreshAccountSecurity(){
+ if(!currentUser)return;
+ try{
+  const {data:ent,error:entError}=await supabaseClient.rpc('get_account_entitlements');
+  if(entError)throw entError;
+  document.getElementById('accountPlan').textContent=String(ent.plan_code||'free').toUpperCase();
+  document.getElementById('accountTrial').textContent=ent.trial_active?'Active':'Expired';
+  document.getElementById('accountDevices').textContent=String(ent.active_devices??0)+' / '+String(ent.device_limit??2);
+  const end=ent.trial_ends_at?new Date(ent.trial_ends_at).toLocaleString():'—';
+  setAccountStatus((ent.pos_allowed?'POS access enabled':'POS access locked')+' · Trial ends: '+end);
+  const {data:devices,error:deviceError}=await supabaseClient.from('account_devices').select('id,device_label,device_type,last_seen_at,revoked_at').order('registered_at',{ascending:false});
+  if(deviceError)throw deviceError;
+  document.getElementById('accountDeviceRows').innerHTML=(devices||[]).map(d=>'<tr><td>'+esc(d.device_label)+'</td><td>'+esc(d.device_type)+'</td><td>'+esc(d.last_seen_at?new Date(d.last_seen_at).toLocaleString():'—')+'</td><td><span class="pill">'+(d.revoked_at?'Revoked':'Active')+'</span></td><td>'+(d.revoked_at?'': '<button type="button" class="secondary" onclick="revokeAccountDevice(\''+esc(d.id)+'\')">Revoke</button>')+'</td></tr>').join('')||'<tr><td colspan="5" class="empty">No registered devices.</td></tr>';
+  const {data:addons,error:addonError}=await supabaseClient.from('subscription_addons').select('status,amount_mmk,created_at,ends_at').eq('addon_code','extra_device_slot').order('created_at',{ascending:false}).limit(5);
+  if(addonError)throw addonError;
+  document.getElementById('deviceAddonStatus').textContent=(addons||[]).map(a=>a.status+' · '+Number(a.amount_mmk).toLocaleString()+' MMK/month'+(a.ends_at?' · ends '+new Date(a.ends_at).toLocaleDateString():'')).join(' | ')||'No extra device requests.';
+ }catch(err){
+  setAccountStatus('Account security setup is not available yet. '+(err.message||'Please try again later.'),true);
+  document.getElementById('accountPlan').textContent='Pending';
+  document.getElementById('accountTrial').textContent='Pending';
+  document.getElementById('accountDevices').textContent='Pending';
+ }
+}
+async function revokeAccountDevice(id){
+ if(!confirm('Revoke this device? Its current session will lose protected access.'))return;
+ try{const {data,error}=await supabaseClient.rpc('revoke_account_device',{p_device_id:id});if(error)throw error;if(!data)throw new Error('Device was not revoked.');await refreshAccountSecurity();}
+ catch(err){alert('Could not revoke device: '+err.message);}
+}
+async function requestExtraDeviceSlot(){
+ const btn=document.getElementById('requestDeviceSlotBtn');btn.disabled=true;
+ try{const {data,error}=await supabaseClient.rpc('request_extra_device_slot');if(error)throw error;document.getElementById('deviceAddonStatus').textContent='Request submitted ('+data+'). Status: pending verification. Please wait for payment instructions.';await refreshAccountSecurity();}
+ catch(err){document.getElementById('deviceAddonStatus').textContent='Request unavailable: '+err.message;}
+ finally{btn.disabled=false;}
+}
+async function initializeAccountSecurity(){
+ if(!currentUser)return;
+ try{
+  const {error:trialError}=await supabaseClient.rpc('ensure_account_pos_trial');
+  if(trialError)throw trialError;
+  const {error:deviceError}=await supabaseClient.rpc('register_account_device',{p_device_key:accountDeviceKey(),p_device_type:accountDeviceType(),p_device_label:accountDeviceLabel()});
+  if(deviceError)throw deviceError;
+  await refreshAccountSecurity();
+ }catch(err){
+  setAccountStatus('Device/trial services are awaiting the reviewed database migration. Sign-in and existing workspace remain available. '+(err.message||''),true);
+ }
+}
 async function activateUser(user){
  if(!user)return;
  if(currentUser?.id===user.id&&current===user.id)return;
@@ -783,6 +875,7 @@ async function activateUser(user){
  avatar.textContent=displayName.slice(0,1).toUpperCase();
  render();
  await loadCloudData();
+ await initializeAccountSecurity();
 }
 async function enterApp(){
  const {data:{session},error}=await supabaseClient.auth.getSession();
@@ -816,7 +909,7 @@ supabaseClient.auth.onAuthStateChange((event,session)=>{
  if(!session){current=null;currentUser=null;}
 });
 
-const titles={dashboard:['Overview','A clear view of what is happening in your business.'],products:['Products','Manage your products and services.'],orders:['Orders','Track sales and payment status.'],customers:['Customers','Build and maintain customer relationships.'],marketing:['Marketing','Prepare campaign briefs and content plans.'],finance:['Finance','Track recorded revenue and expenses.'],tools:['AI & OCR','Image upload and document notes.'],owner:['Owner area','Private platform administration.']};
+const titles={dashboard:['Overview','A clear view of what is happening in your business.'],products:['Products','Manage your products and services.'],orders:['Orders','Track sales and payment status.'],customers:['Customers','Build and maintain customer relationships.'],marketing:['Marketing','Prepare campaign briefs and content plans.'],finance:['Finance','Track recorded revenue and expenses.'],tools:['AI & OCR','Image upload and document notes.'],account:['Account & Devices','Manage your plan, trial and registered devices.'],owner:['Owner area','Private platform administration.']};
 function showPage(id){
  if(id==='owner'&&!['owner','admin'].includes(String(currentUser?.app_metadata?.role||'').toLowerCase())){alert('Owner access required.');return;}
  const next=document.getElementById(id);if(!next)return;
