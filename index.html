@@ -479,10 +479,28 @@ button:focus-visible,[data-page]:focus-visible{outline:2px solid #e6bb94;outline
    <div class="field" id="nameField"><label>Your name / Business name</label><input id="authName" required placeholder="e.g. Aung's Studio"></div>
    <div class="field"><label>Email address</label><input id="authEmail" type="email" required placeholder="you@example.com" autocomplete="email"></div>
    <div class="field"><label>Password</label><input id="authPassword" type="password" minlength="6" required placeholder="At least 6 characters" autocomplete="new-password"></div>
-   <button class="full" id="authSubmit">Create free account</button>
+   <button class="full" id="authSubmit" type="submit">Create free account</button>
   </form>
+  <div class="row" style="justify-content:space-between;margin-top:10px">
+   <button class="secondary hidden" type="button" id="forgotPasswordBtn" style="padding:7px 10px;font-size:12px">Forgot password?</button>
+   <button class="secondary hidden" type="button" id="resendConfirmationBtn" style="padding:7px 10px;font-size:12px">Resend confirmation email</button>
+  </div>
+  <section id="passwordRecoveryPanel" class="panel hidden" style="margin-top:16px">
+   <h3 id="passwordRecoveryTitle">Password recovery</h3>
+   <div class="muted" id="passwordRecoveryHelp">Enter your email address to receive a secure password reset link.</div>
+   <form id="passwordResetRequestForm">
+    <div class="field"><label for="resetEmail">Email address</label><input id="resetEmail" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+    <button class="full" id="sendResetLinkButton" type="submit">Send reset link</button>
+   </form>
+   <form id="passwordUpdateForm" class="hidden">
+    <div class="field"><label for="newPassword">New password</label><input id="newPassword" type="password" minlength="6" autocomplete="new-password" required placeholder="At least 6 characters"></div>
+    <div class="field"><label for="confirmNewPassword">Confirm new password</label><input id="confirmNewPassword" type="password" minlength="6" autocomplete="new-password" required placeholder="Enter the password again"></div>
+    <button class="full" id="updatePasswordButton" type="submit">Update password</button>
+   </form>
+   <div id="passwordRecoveryMessage" class="small" role="status" aria-live="polite" style="margin-top:10px"></div>
+  </section>
   <div class="auth-note">Authentication uses Supabase. Business records sync to your private Supabase database. Marketing drafts and OCR notes are kept on this device in this version.</div>
-  <div id="authError" class="small" style="color:#d65b5b;margin-top:10px"></div>
+  <div id="authError" class="small" role="alert" aria-live="polite" style="color:#d65b5b;margin-top:10px"></div>
  </div></section>
 </div>
 <div id="app" class="app hidden">
@@ -593,15 +611,30 @@ function setCloudStatus(message,isError=false){
 }
 function localKey(){return DBKEY+'_'+current}
 function saveLocalOnly(){if(current)localStorage.setItem(localKey(),JSON.stringify(db))}
+function authErrorMessage(err){
+ const code=String(err?.code||'').toLowerCase();
+ const message=String(err?.message||'');
+ if(message==='Failed to fetch'||/network request failed|fetch failed/i.test(message))return 'Cannot reach the sign-in service. Check your internet connection and try again.';
+ if(code==='invalid_credentials'||/invalid login credentials/i.test(message))return 'Email or password is incorrect. If you just created an account, confirm your email first or use Forgot password.';
+ if(code==='email_not_confirmed'||/email not confirmed/i.test(message))return 'Please confirm your email using the link we sent before signing in.';
+ if(code==='user_already_exists'||/already registered/i.test(message))return 'This email already has an account. Choose Sign in or use Forgot password.';
+ if(code==='weak_password'||/password should be|weak password/i.test(message))return 'Choose a stronger password that meets the password requirements.';
+ if(code==='over_email_send_rate_limit'||/rate limit/i.test(message))return 'Too many email requests. Wait a while before trying again.';
+ return message||'Authentication could not be completed. Please try again.';
+}
 function setAuthMode(mode){
  authMode=mode;
  document.getElementById('signupTab').classList.toggle('active',mode==='signup');
  document.getElementById('loginTab').classList.toggle('active',mode==='login');
  document.getElementById('nameField').classList.toggle('hidden',mode==='login');
  document.getElementById('authName').required=mode==='signup';
+ document.getElementById('authPassword').autocomplete=mode==='signup'?'new-password':'current-password';
  document.getElementById('authTitle').textContent=mode==='signup'?'Create your account':'Welcome back';
  document.getElementById('authSubtitle').textContent=mode==='signup'?'Create a secure account with Supabase.':'Sign in to your cloud-authenticated workspace.';
  document.getElementById('authSubmit').textContent=mode==='signup'?'Create free account':'Sign in';
+ document.getElementById('forgotPasswordBtn').classList.toggle('hidden',mode!=='login');
+ document.getElementById('resendConfirmationBtn').classList.add('hidden');
+ document.getElementById('passwordRecoveryPanel').classList.add('hidden');
  document.getElementById('authError').textContent='';
 }
 document.getElementById('authForm').addEventListener('submit',async e=>{
@@ -612,6 +645,7 @@ document.getElementById('authForm').addEventListener('submit',async e=>{
  const submit=document.getElementById('authSubmit');
  const error=document.getElementById('authError');
  submit.disabled=true;submit.textContent='Please wait…';error.textContent='';
+ document.getElementById('resendConfirmationBtn').classList.add('hidden');
  try{
   if(authMode==='signup'){
    const {data,error:err}=await supabaseClient.auth.signUp({
@@ -619,19 +653,87 @@ document.getElementById('authForm').addEventListener('submit',async e=>{
     options:{data:{full_name:name},emailRedirectTo:SITE_URL}
    });
    if(err)throw err;
-   if(data.session){await activateUser(data.user);}
-   else{error.style.color='var(--good)';error.textContent='Account created. Confirm your email, then sign in.';}
+   if(data.session&&data.user){await activateUser(data.user);}
+   else{
+    error.style.color='var(--good)';
+    error.textContent='Signup request accepted. Check your inbox and spam folder for the confirmation link. After confirming, sign in here.';
+    document.getElementById('resendConfirmationBtn').classList.remove('hidden');
+   }
   }else{
    const {data,error:err}=await supabaseClient.auth.signInWithPassword({email,password});
    if(err)throw err;
+   if(!data.user)throw new Error('Sign-in returned no user. Please try again.');
    await activateUser(data.user);
   }
  }catch(err){
   error.style.color='#d65b5b';
-  error.textContent=err.message==='Failed to fetch'
-   ?'Supabase connection failed. Check internet/VPN and the project URL/key.'
-   :(err.message||'Authentication failed.');
- }finally{submit.disabled=false;submit.textContent=authMode==='signup'?'Create free account':'Sign in';}
+  error.textContent=authErrorMessage(err);
+ }finally{
+  submit.disabled=false;
+  submit.textContent=authMode==='signup'?'Create free account':'Sign in';
+ }
+});
+document.getElementById('forgotPasswordBtn').addEventListener('click',()=>{
+ const panel=document.getElementById('passwordRecoveryPanel');
+ panel.classList.remove('hidden');
+ document.getElementById('passwordRecoveryTitle').textContent='Reset your password';
+ document.getElementById('passwordRecoveryHelp').textContent='We will email you a secure link to choose a new password.';
+ document.getElementById('passwordResetRequestForm').classList.remove('hidden');
+ document.getElementById('passwordUpdateForm').classList.add('hidden');
+ document.getElementById('resetEmail').value=document.getElementById('authEmail').value.trim().toLowerCase();
+ document.getElementById('passwordRecoveryMessage').textContent='';
+});
+document.getElementById('resendConfirmationBtn').addEventListener('click',async()=>{
+ const email=document.getElementById('authEmail').value.trim().toLowerCase();
+ const button=document.getElementById('resendConfirmationBtn');
+ const error=document.getElementById('authError');
+ if(!email){error.textContent='Enter your email address first.';return;}
+ button.disabled=true;
+ try{
+  const {error:err}=await supabaseClient.auth.resend({type:'signup',email,options:{emailRedirectTo:SITE_URL}});
+  if(err)throw err;
+  error.style.color='var(--good)';error.textContent='If confirmation is still required, a new email has been requested. Check your inbox and spam folder.';
+ }catch(err){error.style.color='#d65b5b';error.textContent=authErrorMessage(err);}
+ finally{button.disabled=false;}
+});
+document.getElementById('passwordResetRequestForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const button=document.getElementById('sendResetLinkButton');
+ const message=document.getElementById('passwordRecoveryMessage');
+ const email=document.getElementById('resetEmail').value.trim().toLowerCase();
+ button.disabled=true;message.textContent='Sending…';
+ try{
+  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:SITE_URL});
+  if(error)throw error;
+  message.style.color='var(--good)';
+  message.textContent='If an account exists for this email, a password reset link will be sent. Check your inbox and spam folder.';
+ }catch(err){message.style.color='#d65b5b';message.textContent=authErrorMessage(err);}
+ finally{button.disabled=false;}
+});
+document.getElementById('passwordUpdateForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const first=document.getElementById('newPassword').value;
+ const second=document.getElementById('confirmNewPassword').value;
+ const button=document.getElementById('updatePasswordButton');
+ const message=document.getElementById('passwordRecoveryMessage');
+ if(first!==second){message.style.color='#d65b5b';message.textContent='The passwords do not match.';return;}
+ button.disabled=true;message.textContent='Updating password…';
+ try{
+  const {error}=await supabaseClient.auth.updateUser({password:first});
+  if(error)throw error;
+  message.style.color='var(--good)';
+  message.textContent='Password updated. Please sign in with your new password.';
+  await supabaseClient.auth.signOut();
+  current=null;currentUser=null;db=blank();
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('auth').classList.remove('hidden');
+  document.getElementById('authPassword').value='';
+  document.getElementById('passwordUpdateForm').classList.add('hidden');
+  setAuthMode('login');
+  document.getElementById('authError').style.color='var(--good)';
+  document.getElementById('authError').textContent='Your password has been updated. Sign in with the new password.';
+ }catch(err){message.style.color='#d65b5b';message.textContent=authErrorMessage(err);}
+ finally{button.disabled=false;}
 });
 
 async function cloudSelect(table){
@@ -671,6 +773,7 @@ async function loadCloudData(){
 }
 async function activateUser(user){
  if(!user)return;
+ if(currentUser?.id===user.id&&current===user.id)return;
  currentUser=user;current=user.id;
  db=blank();
  document.getElementById('auth').classList.add('hidden');
@@ -695,7 +798,20 @@ async function logout(){
  document.getElementById('authPassword').value='';
  setAuthMode('login');
 }
-supabaseClient.auth.onAuthStateChange((_event,session)=>{
+supabaseClient.auth.onAuthStateChange((event,session)=>{
+ if(event==='PASSWORD_RECOVERY'){
+  setTimeout(()=>{
+   document.getElementById('app').classList.add('hidden');
+   document.getElementById('auth').classList.remove('hidden');
+   document.getElementById('passwordRecoveryPanel').classList.remove('hidden');
+   document.getElementById('passwordResetRequestForm').classList.add('hidden');
+   document.getElementById('passwordUpdateForm').classList.remove('hidden');
+   document.getElementById('passwordRecoveryTitle').textContent='Choose a new password';
+   document.getElementById('passwordRecoveryHelp').textContent='Enter and confirm your new password below.';
+   document.getElementById('passwordRecoveryMessage').textContent='';
+  },0);
+  return;
+ }
  if(session?.user&&!currentUser){setTimeout(()=>activateUser(session.user),0);}
  if(!session){current=null;currentUser=null;}
 });
