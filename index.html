@@ -625,7 +625,28 @@ const SITE_URL = window.location.origin;
 
 const SUPABASE_URL="https://esoekjjwsbtuyjkrbnam.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_WE3HWB-BDEor5QgfPpoNxg_K8PLd6_T";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+async function supabaseAuthProxyFetch(input,init){
+ const request=new Request(input,init);
+ const url=new URL(request.url);
+ if(url.origin!==SUPABASE_URL||!url.pathname.startsWith('/auth/v1/'))return fetch(request);
+ const proxyUrl=new URL('/api/supabase-auth-proxy',SITE_URL);
+ proxyUrl.searchParams.set('path',url.pathname+url.search);
+ const headers=new Headers(request.headers);
+ headers.delete('host');
+ headers.delete('content-length');
+ headers.delete('origin');
+ const body=request.method==='GET'||request.method==='HEAD'?undefined:await request.arrayBuffer();
+ return fetch(proxyUrl.toString(),{
+  method:request.method,
+  headers,
+  body,
+  signal:request.signal,
+  redirect:'manual'
+ });
+}
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{
+ global:{fetch:supabaseAuthProxyFetch}
+});
 const DBKEY='northstarBusinessOS_v06';
 const blank=()=>({products:[],orders:[],customers:[],expenses:[],notes:[]});
 let current=null,db=blank(),authMode='signup',currentUser=null;
