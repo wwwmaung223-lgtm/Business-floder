@@ -1,0 +1,44 @@
+name: Northstar release validation
+
+on:
+  push:
+    branches:
+      - release/v1.7.1-integrated
+  pull_request:
+    branches:
+      - release/v1.7.1-integrated
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Extract inline scripts and validate JavaScript
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const scripts = [...html.matchAll(/<script\\b(?![^>]*\\bsrc=)[^>]*>([\\s\\S]*?)<\\/script>/gi)]
+            .map(match => match[1])
+            .filter(source => source.trim());
+          if (!scripts.length) throw new Error('No inline JavaScript found');
+          scripts.forEach((source, index) => fs.writeFileSync('/tmp/northstar-inline-' + index + '.js', source));
+          const ids = [...html.matchAll(/\\bid=["']([^"']+)["']/g)].map(match => match[1]);
+          const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
+          if (duplicates.length) throw new Error('Duplicate HTML IDs: ' + [...new Set(duplicates)].join(', '));
+          const required = ['supabaseAuthProxyFetch', 'handleEmailAuthCallback', 'resetPasswordForEmail', 'refreshAccountSecurity', 'renderAutomation', 'generateDailyBrief', 'printInvoice'];
+          for (const feature of required) if (!html.includes(feature)) throw new Error('Missing required feature: ' + feature);
+          console.log('Validated ' + scripts.length + ' inline scripts and ' + ids.length + ' unique IDs.');
+          NODE
+          for file in /tmp/northstar-inline-*.js; do
+            node --check "$file"
+          done
