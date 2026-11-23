@@ -1,5 +1,5 @@
-// Read-only diagnostic: checks whether Vercel's server runtime can reach this
-// project's Supabase Auth health endpoint. No credentials or user data are used.
+// Read-only diagnostic: checks whether Vercel can reach Supabase Auth using
+// the project's public publishable key. No user credentials or data are used.
 module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, max-age=0");
   res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -13,7 +13,13 @@ module.exports = async function handler(req, res) {
   try {
     const upstream = await fetch(
       "https://esoekjjwsbtuyjkrbnam.supabase.co/auth/v1/health",
-      { method: "GET", signal: AbortSignal.timeout(8000) }
+      {
+        method: "GET",
+        headers: {
+          apikey: "sb_publishable_WE3HWB-BDEor5QgfPpoNxg_K8PLd6_T"
+        },
+        signal: AbortSignal.timeout(8000)
+      }
     );
     const body = await upstream.text();
     return res.status(200).json({
