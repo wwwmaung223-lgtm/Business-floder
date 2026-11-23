@@ -42,3 +42,12 @@ jobs:
           for file in /tmp/northstar-inline-*.js; do
             node --check "$file"
           done
+      - name: Validate Cloudflare Pages Auth Function
+        shell: bash
+        run: |
+          cp functions/api/supabase-auth-proxy.js /tmp/northstar-auth-proxy.mjs
+          node --check /tmp/northstar-auth-proxy.mjs
+          grep -q 'SUPABASE_ORIGIN = "https://esoekjjwsbtuyjkrbnam.supabase.co"' functions/api/supabase-auth-proxy.js
+          grep -q 'startsWith("/auth/v1/")' functions/api/supabase-auth-proxy.js
+          grep -q 'Cache-Control' functions/api/supabase-auth-proxy.js
+          grep -q 'X-Content-Type-Options: nosniff' _headers
