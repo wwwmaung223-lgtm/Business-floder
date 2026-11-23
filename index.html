@@ -479,10 +479,28 @@ button:focus-visible,[data-page]:focus-visible{outline:2px solid #e6bb94;outline
    <div class="field" id="nameField"><label>Your name / Business name</label><input id="authName" required placeholder="e.g. Aung's Studio"></div>
    <div class="field"><label>Email address</label><input id="authEmail" type="email" required placeholder="you@example.com" autocomplete="email"></div>
    <div class="field"><label>Password</label><input id="authPassword" type="password" minlength="6" required placeholder="At least 6 characters" autocomplete="new-password"></div>
-   <button class="full" id="authSubmit">Create free account</button>
+   <button class="full" id="authSubmit" type="submit">Create free account</button>
   </form>
+  <div class="row" style="justify-content:space-between;margin-top:10px">
+   <button class="secondary hidden" type="button" id="forgotPasswordBtn" style="padding:7px 10px;font-size:12px">Forgot password?</button>
+   <button class="secondary hidden" type="button" id="resendConfirmationBtn" style="padding:7px 10px;font-size:12px">Resend confirmation email</button>
+  </div>
+  <section id="passwordRecoveryPanel" class="panel hidden" style="margin-top:16px">
+   <h3 id="passwordRecoveryTitle">Password recovery</h3>
+   <div class="muted" id="passwordRecoveryHelp">Enter your email address to receive a secure password reset link.</div>
+   <form id="passwordResetRequestForm">
+    <div class="field"><label for="resetEmail">Email address</label><input id="resetEmail" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+    <button class="full" id="sendResetLinkButton" type="submit">Send reset link</button>
+   </form>
+   <form id="passwordUpdateForm" class="hidden">
+    <div class="field"><label for="newPassword">New password</label><input id="newPassword" type="password" minlength="6" autocomplete="new-password" required placeholder="At least 6 characters"></div>
+    <div class="field"><label for="confirmNewPassword">Confirm new password</label><input id="confirmNewPassword" type="password" minlength="6" autocomplete="new-password" required placeholder="Enter the password again"></div>
+    <button class="full" id="updatePasswordButton" type="submit">Update password</button>
+   </form>
+   <div id="passwordRecoveryMessage" class="small" role="status" aria-live="polite" style="margin-top:10px"></div>
+  </section>
   <div class="auth-note">Authentication uses Supabase. Business records sync to your private Supabase database. Marketing drafts and OCR notes are kept on this device in this version.</div>
-  <div id="authError" class="small" style="color:#d65b5b;margin-top:10px"></div>
+  <div id="authError" class="small" role="alert" aria-live="polite" style="color:#d65b5b;margin-top:10px"></div>
  </div></section>
 </div>
 <div id="app" class="app hidden">
@@ -497,7 +515,8 @@ button:focus-visible,[data-page]:focus-visible{outline:2px solid #e6bb94;outline
    <button data-page="marketing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14V8l14-4v16L4 16v-2ZM4 14l3 7h4l-2-6M18 9h3v4h-3"/></svg><span>Marketing</span></button>
    <button data-page="finance"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h3M8 16h6"/></svg><span>Finance</span></button>
    <button data-page="tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg><span>AI & OCR</span></button>
-  </nav>
+  
+   <button type="button" data-page="account">◉ Account & Devices</button></nav>
   <div class="sidebar-bottom">Northstar Business OS · v1.4.1<br><span id="sidebarUser">Local demo</span></div>
  </aside>
  <main class="main">
@@ -523,11 +542,37 @@ button:focus-visible,[data-page]:focus-visible{outline:2px solid #e6bb94;outline
    <div class="cloud-footer"><span class="cloud-pulse"></span><span id="cloudStatus" role="status">Connecting to cloud database…</span></div>
   </section>
   <section class="section" id="products"><div class="panel"><h3>Product & service catalog</h3><form id="productForm"><div class="formgrid"><div class="field"><label>Name</label><input id="pname" required placeholder="Product or service name"></div><div class="field"><label>Type</label><select id="ptype"><option>Digital product</option><option>Physical product</option><option>Service</option><option>Course</option></select></div><div class="field"><label>Price (MMK)</label><input id="pprice" type="number" min="0" required></div><div class="field"><label>Description</label><input id="pdesc" placeholder="Short value proposition"></div></div><button>Add product</button></form><div class="tablewrap"><table><thead><tr><th>Name</th><th>Type</th><th>Price · MMK</th><th></th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
-  <section class="section" id="orders"><div class="panel"><h3>Record a new order</h3><form id="orderForm"><div class="formgrid"><div class="field"><label>Customer name</label><input id="ocustomer" required></div><div class="field"><label>Product / service</label><select id="oproduct" required></select></div><div class="field"><label>Amount · MMK</label><input id="oamount" type="number" min="0" required></div><div class="field"><label>Payment status</label><select id="ostatus"><option>Pending</option><option>Paid</option><option>Cancelled</option></select></div></div><button>Create order</button></form><div class="tablewrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Item</th><th>Amount</th><th>Status</th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
+  <section class="section" id="orders"><div class="panel"><h3>Record a new order</h3><div class="notice" role="note">Basic order register only. This saves an order header; it does not save itemized order lines, deduct stock, or create a POS receipt. Verify payment separately before marking an order Paid.</div><form id="orderForm"><div class="formgrid"><div class="field"><label>Customer name</label><input id="ocustomer" required></div><div class="field"><label>Product / service</label><select id="oproduct" required></select></div><div class="field"><label>Amount · MMK</label><input id="oamount" type="number" min="0" required></div><div class="field"><label>Payment status</label><select id="ostatus"><option>Pending</option><option>Paid</option><option>Cancelled</option></select></div></div><button>Create order</button></form><div class="tablewrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Item</th><th>Amount</th><th>Status</th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
   <section class="section" id="customers"><div class="panel"><h3>Customer directory</h3><form id="customerForm"><div class="formgrid"><div class="field"><label>Name</label><input id="cname" required></div><div class="field"><label>Email / phone / social handle</label><input id="ccontact"></div></div><button>Add customer</button></form><div class="tablewrap"><table><thead><tr><th>Name</th><th>Contact</th><th>Added</th></tr></thead><tbody id="customerRows"></tbody></table></div></div></section>
   <section class="section" id="marketing"><div class="panel"><h3>Marketing brief builder</h3><div class="field"><label>Product / service</label><input id="mproduct" placeholder="What are you promoting?"></div><div class="field"><label>Target audience</label><input id="maudience" placeholder="Who needs it?"></div><div class="formgrid"><div class="field"><label>Platform</label><select id="mplatform"><option>Facebook</option><option>TikTok</option><option>Instagram</option><option>LinkedIn</option><option>Email</option></select></div><div class="field"><label>Campaign goal</label><select id="mgoal"><option>Awareness</option><option>Engagement</option><option>Sales</option><option>Leads</option></select></div></div><button onclick="makeBrief()">Generate brief</button><div class="field"><label>Campaign brief · Burmese + English ready</label><textarea id="mdraft" rows="9" placeholder="Your campaign brief will appear here..."></textarea></div><button class="secondary" onclick="copyBrief()">Copy brief</button><p class="small">This creates a structured brief, not AI-generated claims or testimonials.</p></div></section>
   <section class="section" id="finance"><div class="panel"><h3>Finance tracker</h3><div class="formgrid"><div class="field"><label>Expense description</label><input id="edesc" placeholder="Internet, tools, delivery..."></div><div class="field"><label>Amount · MMK</label><input id="eamount" type="number" min="0"></div></div><button onclick="addExpense()">Add expense</button><div class="grid4"><div class="card"><div class="metric-label">Paid revenue</div><div class="metric" id="rev">0</div></div><div class="card"><div class="metric-label">Expenses</div><div class="metric" id="exp">0</div></div><div class="card"><div class="metric-label">Net recorded</div><div class="metric" id="net">0</div></div></div><div class="tablewrap"><table><thead><tr><th>Expense</th><th>Amount · MMK</th></tr></thead><tbody id="expenseRows"></tbody></table></div></div></section>
-  <section class="section" id="tools"><div class="panel"><h3>Photo OCR · ဓာတ်ပုံမှ စာသားဖတ်ရန်</h3><div class="notice">Choose a receipt, document or product photo. OCR runs in your browser using Tesseract.js. English and Myanmar are supported; accuracy depends on image quality and handwriting may not read correctly.</div><div class="field"><label>Choose image / ဓာတ်ပုံရွေးပါ</label><input type="file" id="imageInput" accept="image/*"></div><div class="row"><button type="button" id="runOcrBtn" onclick="runOCR()">✧ Extract text / စာသားဖတ်မယ်</button><select id="ocrLang" aria-label="OCR language"><option value="eng+mya">English + Myanmar</option><option value="eng">English only</option><option value="mya">Myanmar only</option></select><button type="button" class="secondary" id="uploadImageBtn" onclick="uploadImage()">Upload to cloud</button><span id="uploadStatus" class="small">Sign in to upload.</span></div><div id="ocrProgress" class="small" role="status" style="margin:10px 0"></div><img id="preview" style="display:none;max-width:100%;max-height:340px;border-radius:14px;margin-top:12px"><div class="field" style="margin-top:14px"><label>Extracted text / ရရှိလာသောစာသား</label><textarea id="ocrtext" rows="7" placeholder="OCR text will appear here. You can edit it before saving..."></textarea></div><div class="row"><button onclick="saveNote()">Save note / မှတ်တမ်းသိမ်းမယ်</button><button class="secondary" type="button" onclick="copyOCRText()">Copy text</button></div><div id="savedNotes" class="content-list" style="margin-top:12px"></div></div></section>
+  <section class="section" id="tools"><div class="panel"><h3>Photo OCR · ဓာတ်ပုံမှ စာသားဖတ်ရန်</h3><div class="notice">Choose a receipt, document or product photo. OCR runs in your browser using Tesseract.js. English and Myanmar are supported; accuracy depends on image quality and handwriting may not read correctly.</div><div class="field"><label>Choose image / ဓာတ်ပုံရွေးပါ</label><input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp"></div><div class="row"><button type="button" id="runOcrBtn" onclick="runOCR()">✧ Extract text / စာသားဖတ်မယ်</button><select id="ocrLang" aria-label="OCR language"><option value="eng+mya">English + Myanmar</option><option value="eng">English only</option><option value="mya">Myanmar only</option></select><button type="button" class="secondary" id="uploadImageBtn" onclick="uploadImage()">Upload to cloud</button><span id="uploadStatus" class="small">Sign in to upload.</span></div><div id="ocrProgress" class="small" role="status" style="margin:10px 0"></div><img id="preview" style="display:none;max-width:100%;max-height:340px;border-radius:14px;margin-top:12px"><div class="field" style="margin-top:14px"><label>Extracted text / ရရှိလာသောစာသား</label><textarea id="ocrtext" rows="7" placeholder="OCR text will appear here. You can edit it before saving..."></textarea></div><div class="row"><button onclick="saveNote()">Save note / မှတ်တမ်းသိမ်းမယ်</button><button class="secondary" type="button" onclick="copyOCRText()">Copy text</button></div><div id="savedN  <section class="section" id="account">
+   <div class="panel">
+    <div class="eyebrow">ACCOUNT SECURITY / SUBSCRIPTION</div>
+    <h3>Plan, trial & device access</h3>
+    <p class="page-sub">Your account access and registered devices. / အကောင့်၊ Trial နှင့် ချိတ်ဆက်ထားသော Device များ</p>
+    <div class="grid4" style="margin-top:16px">
+     <div class="admin-tile"><b id="accountPlan">—</b><span>Current plan</span></div>
+     <div class="admin-tile"><b id="accountTrial">—</b><span>POS trial status</span></div>
+     <div class="admin-tile"><b id="accountDevices">—</b><span>Active devices</span></div>
+     <div class="admin-tile"><b>11,000 MMK</b><span>Extra device slot / month</span></div>
+    </div>
+    <div class="notice" id="accountAccessStatus" role="status">Checking account entitlements…</div>
+   </div>
+   <div class="panel" style="margin-top:15px">
+    <div class="row" style="justify-content:space-between"><h3>Registered devices</h3><button type="button" class="secondary" onclick="refreshAccountSecurity()">↻ Refresh</button></div>
+    <p class="small">One phone + one computer are included. Revoke a device before registering its replacement. A revoked session must sign in again.</p>
+    <div class="tablewrap"><table><thead><tr><th>Device</th><th>Type</th><th>Last active</th><th>Status</th><th></th></tr></thead><tbody id="accountDeviceRows"><tr><td colspan="5" class="empty">Device information will appear after account security setup.</td></tr></tbody></table></div>
+   </div>
+   <div class="panel" style="margin-top:15px">
+    <h3>Extra device slot</h3>
+    <p>11,000 MMK per additional device slot, billed monthly. This adds device capacity only; it does not change staff, branch, or plan feature limits.</p>
+    <div class="notice">Submit a request to the platform team. The add-on stays pending until the merchant transaction is independently verified. A payment screenshot alone does not activate it.</div>
+    <button type="button" id="requestDeviceSlotBtn" onclick="requestExtraDeviceSlot()">Request extra device slot · 11,000 MMK/month</button>
+    <p class="small" id="deviceAddonStatus" role="status" style="margin-top:10px"></p>
+   </div>
+  </section>
+otes" class="content-list" style="margin-top:12px"></div></div></section>
   <section class="section" id="owner">
     <div class="panel">
      <div class="eyebrow">OWNER ONLY · PRIVATE CONTROL CENTER</div><h3>Platform overview</h3>
@@ -580,11 +625,33 @@ const SITE_URL = window.location.origin;
 
 const SUPABASE_URL="https://esoekjjwsbtuyjkrbnam.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_WE3HWB-BDEor5QgfPpoNxg_K8PLd6_T";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+async function supabaseAuthProxyFetch(input,init){
+ const request=new Request(input,init);
+ const url=new URL(request.url);
+ if(url.origin!==SUPABASE_URL||!url.pathname.startsWith('/auth/v1/'))return fetch(request);
+ const proxyUrl=new URL('/api/supabase-auth-proxy',SITE_URL);
+ proxyUrl.searchParams.set('path',url.pathname+url.search);
+ const headers=new Headers(request.headers);
+ headers.delete('host');
+ headers.delete('content-length');
+ headers.delete('origin');
+ const body=request.method==='GET'||request.method==='HEAD'?undefined:await request.arrayBuffer();
+ return fetch(proxyUrl.toString(),{
+  method:request.method,
+  headers,
+  body,
+  signal:request.signal,
+  redirect:'manual'
+ });
+}
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{
+ global:{fetch:supabaseAuthProxyFetch}
+});
 const DBKEY='northstarBusinessOS_v06';
 const blank=()=>({products:[],orders:[],customers:[],expenses:[],notes:[]});
 let current=null,db=blank(),authMode='signup',currentUser=null;
 let cloudBusy=false;
+let ocrNotesCloudAvailable=true;
 
 function setCloudStatus(message,isError=false){
  const el=document.getElementById('cloudStatus');
@@ -592,15 +659,30 @@ function setCloudStatus(message,isError=false){
 }
 function localKey(){return DBKEY+'_'+current}
 function saveLocalOnly(){if(current)localStorage.setItem(localKey(),JSON.stringify(db))}
+function authErrorMessage(err){
+ const code=String(err?.code||'').toLowerCase();
+ const message=String(err?.message||'');
+ if(message==='Failed to fetch'||/network request failed|fetch failed/i.test(message))return 'Cannot reach the sign-in service. Check your internet connection and try again.';
+ if(code==='invalid_credentials'||/invalid login credentials/i.test(message))return 'Email or password is incorrect. If you just created an account, confirm your email first or use Forgot password.';
+ if(code==='email_not_confirmed'||/email not confirmed/i.test(message))return 'Please confirm your email using the link we sent before signing in.';
+ if(code==='user_already_exists'||/already registered/i.test(message))return 'This email already has an account. Choose Sign in or use Forgot password.';
+ if(code==='weak_password'||/password should be|weak password/i.test(message))return 'Choose a stronger password that meets the password requirements.';
+ if(code==='over_email_send_rate_limit'||/rate limit/i.test(message))return 'Too many email requests. Wait a while before trying again.';
+ return message||'Authentication could not be completed. Please try again.';
+}
 function setAuthMode(mode){
  authMode=mode;
  document.getElementById('signupTab').classList.toggle('active',mode==='signup');
  document.getElementById('loginTab').classList.toggle('active',mode==='login');
  document.getElementById('nameField').classList.toggle('hidden',mode==='login');
  document.getElementById('authName').required=mode==='signup';
+ document.getElementById('authPassword').autocomplete=mode==='signup'?'new-password':'current-password';
  document.getElementById('authTitle').textContent=mode==='signup'?'Create your account':'Welcome back';
  document.getElementById('authSubtitle').textContent=mode==='signup'?'Create a secure account with Supabase.':'Sign in to your cloud-authenticated workspace.';
  document.getElementById('authSubmit').textContent=mode==='signup'?'Create free account':'Sign in';
+ document.getElementById('forgotPasswordBtn').classList.toggle('hidden',mode!=='login');
+ document.getElementById('resendConfirmationBtn').classList.add('hidden');
+ document.getElementById('passwordRecoveryPanel').classList.add('hidden');
  document.getElementById('authError').textContent='';
 }
 document.getElementById('authForm').addEventListener('submit',async e=>{
@@ -611,6 +693,7 @@ document.getElementById('authForm').addEventListener('submit',async e=>{
  const submit=document.getElementById('authSubmit');
  const error=document.getElementById('authError');
  submit.disabled=true;submit.textContent='Please wait…';error.textContent='';
+ document.getElementById('resendConfirmationBtn').classList.add('hidden');
  try{
   if(authMode==='signup'){
    const {data,error:err}=await supabaseClient.auth.signUp({
@@ -618,19 +701,87 @@ document.getElementById('authForm').addEventListener('submit',async e=>{
     options:{data:{full_name:name},emailRedirectTo:SITE_URL}
    });
    if(err)throw err;
-   if(data.session){await activateUser(data.user);}
-   else{error.style.color='var(--good)';error.textContent='Account created. Confirm your email, then sign in.';}
+   if(data.session&&data.user){await activateUser(data.user);}
+   else{
+    error.style.color='var(--good)';
+    error.textContent='Signup request accepted. Check your inbox and spam folder for the confirmation link. After confirming, sign in here.';
+    document.getElementById('resendConfirmationBtn').classList.remove('hidden');
+   }
   }else{
    const {data,error:err}=await supabaseClient.auth.signInWithPassword({email,password});
    if(err)throw err;
+   if(!data.user)throw new Error('Sign-in returned no user. Please try again.');
    await activateUser(data.user);
   }
  }catch(err){
   error.style.color='#d65b5b';
-  error.textContent=err.message==='Failed to fetch'
-   ?'Supabase connection failed. Check internet/VPN and the project URL/key.'
-   :(err.message||'Authentication failed.');
- }finally{submit.disabled=false;submit.textContent=authMode==='signup'?'Create free account':'Sign in';}
+  error.textContent=authErrorMessage(err);
+ }finally{
+  submit.disabled=false;
+  submit.textContent=authMode==='signup'?'Create free account':'Sign in';
+ }
+});
+document.getElementById('forgotPasswordBtn').addEventListener('click',()=>{
+ const panel=document.getElementById('passwordRecoveryPanel');
+ panel.classList.remove('hidden');
+ document.getElementById('passwordRecoveryTitle').textContent='Reset your password';
+ document.getElementById('passwordRecoveryHelp').textContent='We will email you a secure link to choose a new password.';
+ document.getElementById('passwordResetRequestForm').classList.remove('hidden');
+ document.getElementById('passwordUpdateForm').classList.add('hidden');
+ document.getElementById('resetEmail').value=document.getElementById('authEmail').value.trim().toLowerCase();
+ document.getElementById('passwordRecoveryMessage').textContent='';
+});
+document.getElementById('resendConfirmationBtn').addEventListener('click',async()=>{
+ const email=document.getElementById('authEmail').value.trim().toLowerCase();
+ const button=document.getElementById('resendConfirmationBtn');
+ const error=document.getElementById('authError');
+ if(!email){error.textContent='Enter your email address first.';return;}
+ button.disabled=true;
+ try{
+  const {error:err}=await supabaseClient.auth.resend({type:'signup',email,options:{emailRedirectTo:SITE_URL}});
+  if(err)throw err;
+  error.style.color='var(--good)';error.textContent='If confirmation is still required, a new email has been requested. Check your inbox and spam folder.';
+ }catch(err){error.style.color='#d65b5b';error.textContent=authErrorMessage(err);}
+ finally{button.disabled=false;}
+});
+document.getElementById('passwordResetRequestForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const button=document.getElementById('sendResetLinkButton');
+ const message=document.getElementById('passwordRecoveryMessage');
+ const email=document.getElementById('resetEmail').value.trim().toLowerCase();
+ button.disabled=true;message.textContent='Sending…';
+ try{
+  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:SITE_URL});
+  if(error)throw error;
+  message.style.color='var(--good)';
+  message.textContent='If an account exists for this email, a password reset link will be sent. Check your inbox and spam folder.';
+ }catch(err){message.style.color='#d65b5b';message.textContent=authErrorMessage(err);}
+ finally{button.disabled=false;}
+});
+document.getElementById('passwordUpdateForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const first=document.getElementById('newPassword').value;
+ const second=document.getElementById('confirmNewPassword').value;
+ const button=document.getElementById('updatePasswordButton');
+ const message=document.getElementById('passwordRecoveryMessage');
+ if(first!==second){message.style.color='#d65b5b';message.textContent='The passwords do not match.';return;}
+ button.disabled=true;message.textContent='Updating password…';
+ try{
+  const {error}=await supabaseClient.auth.updateUser({password:first});
+  if(error)throw error;
+  message.style.color='var(--good)';
+  message.textContent='Password updated. Please sign in with your new password.';
+  await supabaseClient.auth.signOut();
+  current=null;currentUser=null;db=blank();
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('auth').classList.remove('hidden');
+  document.getElementById('authPassword').value='';
+  document.getElementById('passwordUpdateForm').classList.add('hidden');
+  setAuthMode('login');
+  document.getElementById('authError').style.color='var(--good)';
+  document.getElementById('authError').textContent='Your password has been updated. Sign in with the new password.';
+ }catch(err){message.style.color='#d65b5b';message.textContent=authErrorMessage(err);}
+ finally{button.disabled=false;}
 });
 
 async function cloudSelect(table){
@@ -647,26 +798,95 @@ async function loadCloudData(){
   ]);
   db.products=products.map(p=>({id:p.id,name:p.name,type:p.description||'Product',price:Number(p.price||0),desc:p.description||''}));
   db.customers=customers.map(c=>({id:c.id,name:c.name,contact:[c.email,c.phone].filter(Boolean).join(' · '),date:c.created_at?new Date(c.created_at).toLocaleDateString():'',email:c.email||'',phone:c.phone||''}));
-  db.orders=orders.map(o=>({id:o.id,date:o.created_at?new Date(o.created_at).toLocaleDateString():'',customer:o.customer_id||'Customer',item:'Order',amount:Number(o.total_amount||0),status:String(o.status||'pending').toLowerCase()==='completed'?'Paid':String(o.status||'pending').replace(/^./,c=>c.toUpperCase())}));
+  db.orders=orders.map(o=>({id:o.id,date:o.created_at?new Date(o.created_at).toLocaleDateString():'',customer:o.customer_id?'Linked customer':'No linked customer',item:'Order record',amount:Number(o.total_amount||0),status:String(o.status||'pending').toLowerCase()==='completed'?'Paid':String(o.status||'pending').replace(/^./,c=>c.toUpperCase())}));
   db.expenses=finance.filter(x=>x.record_type==='expense').map(x=>({id:x.id,desc:x.description||'Expense',amount:Number(x.amount||0)}));
   try{
     const {data:cloudNotes,error:notesError}=await supabaseClient.from('ocr_notes').select('*').order('created_at',{ascending:false});
     if(notesError)throw notesError;
     db.notes=(cloudNotes||[]).map(n=>({id:n.id,text:n.content,date:n.created_at?new Date(n.created_at).toLocaleString():''}));
    }catch(noteErr){
+    ocrNotesCloudAvailable=false;
     db.notes=JSON.parse(localStorage.getItem(localKey()+'_notes')||'[]');
     console.warn('OCR cloud notes not ready:',noteErr.message);
    }
   saveLocalOnly();render();
-  setCloudStatus('Cloud connected · Products, customers, orders and finance loaded.');
+  setCloudStatus(ocrNotesCloudAvailable
+   ?'Cloud connected · Products, customers, orders, finance and OCR notes loaded.'
+   :'Cloud connected · Business records loaded; OCR notes are device-local until cloud access is restored.',!ocrNotesCloudAvailable);
  }catch(err){
   console.error('Cloud load failed:',err);
   setCloudStatus('Cloud database error: '+(err.message||'Could not load data'),true);
   alert('Cloud database could not load: '+(err.message||'Unknown error')+'. Check table policies and columns.');
  }
 }
+const ACCOUNT_DEVICE_KEY='northstar_device_key_v1';
+function accountDeviceKey(){
+ let key=localStorage.getItem(ACCOUNT_DEVICE_KEY);
+ if(!key){key=crypto.randomUUID();localStorage.setItem(ACCOUNT_DEVICE_KEY,key);}
+ return key;
+}
+function accountDeviceType(){
+ return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)?'phone':'computer';
+}
+function accountDeviceLabel(){
+ const type=accountDeviceType();
+ const ua=navigator.userAgent;
+ const os=/Android/i.test(ua)?'Android':/iPhone|iPad|iPod/i.test(ua)?'iOS':/Windows/i.test(ua)?'Windows':/Mac OS/i.test(ua)?'macOS':/Linux/i.test(ua)?'Linux':'Unknown OS';
+ return (type==='phone'?'Phone':'Computer')+' · '+os;
+}
+function setAccountStatus(message,isError=false){
+ const el=document.getElementById('accountAccessStatus');
+ if(el){el.textContent=message;el.style.color=isError?'#d65b5b':'var(--muted)';}
+}
+async function refreshAccountSecurity(){
+ if(!currentUser)return;
+ try{
+  const {data:ent,error:entError}=await supabaseClient.rpc('get_account_entitlements');
+  if(entError)throw entError;
+  document.getElementById('accountPlan').textContent=String(ent.plan_code||'free').toUpperCase();
+  document.getElementById('accountTrial').textContent=ent.trial_active?'Active':'Expired';
+  document.getElementById('accountDevices').textContent=String(ent.active_devices??0)+' / '+String(ent.device_limit??2);
+  const end=ent.trial_ends_at?new Date(ent.trial_ends_at).toLocaleString():'—';
+  setAccountStatus((ent.pos_allowed?'POS access enabled':'POS access locked')+' · Trial ends: '+end);
+  const {data:devices,error:deviceError}=await supabaseClient.from('account_devices').select('id,device_label,device_type,last_seen_at,revoked_at').order('registered_at',{ascending:false});
+  if(deviceError)throw deviceError;
+  document.getElementById('accountDeviceRows').innerHTML=(devices||[]).map(d=>'<tr><td>'+esc(d.device_label)+'</td><td>'+esc(d.device_type)+'</td><td>'+esc(d.last_seen_at?new Date(d.last_seen_at).toLocaleString():'—')+'</td><td><span class="pill">'+(d.revoked_at?'Revoked':'Active')+'</span></td><td>'+(d.revoked_at?'': '<button type="button" class="secondary" onclick="revokeAccountDevice(\''+esc(d.id)+'\')">Revoke</button>')+'</td></tr>').join('')||'<tr><td colspan="5" class="empty">No registered devices.</td></tr>';
+  const {data:addons,error:addonError}=await supabaseClient.from('subscription_addons').select('status,amount_mmk,created_at,ends_at').eq('addon_code','extra_device_slot').order('created_at',{ascending:false}).limit(5);
+  if(addonError)throw addonError;
+  document.getElementById('deviceAddonStatus').textContent=(addons||[]).map(a=>a.status+' · '+Number(a.amount_mmk).toLocaleString()+' MMK/month'+(a.ends_at?' · ends '+new Date(a.ends_at).toLocaleDateString():'')).join(' | ')||'No extra device requests.';
+ }catch(err){
+  setAccountStatus('Account security setup is not available yet. '+(err.message||'Please try again later.'),true);
+  document.getElementById('accountPlan').textContent='Pending';
+  document.getElementById('accountTrial').textContent='Pending';
+  document.getElementById('accountDevices').textContent='Pending';
+ }
+}
+async function revokeAccountDevice(id){
+ if(!confirm('Revoke this device? Its current session will lose protected access.'))return;
+ try{const {data,error}=await supabaseClient.rpc('revoke_account_device',{p_device_id:id});if(error)throw error;if(!data)throw new Error('Device was not revoked.');await refreshAccountSecurity();}
+ catch(err){alert('Could not revoke device: '+err.message);}
+}
+async function requestExtraDeviceSlot(){
+ const btn=document.getElementById('requestDeviceSlotBtn');btn.disabled=true;
+ try{const {data,error}=await supabaseClient.rpc('request_extra_device_slot');if(error)throw error;document.getElementById('deviceAddonStatus').textContent='Request submitted ('+data+'). Status: pending verification. Please wait for payment instructions.';await refreshAccountSecurity();}
+ catch(err){document.getElementById('deviceAddonStatus').textContent='Request unavailable: '+err.message;}
+ finally{btn.disabled=false;}
+}
+async function initializeAccountSecurity(){
+ if(!currentUser)return;
+ try{
+  const {error:trialError}=await supabaseClient.rpc('ensure_account_pos_trial');
+  if(trialError)throw trialError;
+  const {error:deviceError}=await supabaseClient.rpc('register_account_device',{p_device_key:accountDeviceKey(),p_device_type:accountDeviceType(),p_device_label:accountDeviceLabel()});
+  if(deviceError)throw deviceError;
+  await refreshAccountSecurity();
+ }catch(err){
+  setAccountStatus('Device/trial services are awaiting the reviewed database migration. Sign-in and existing workspace remain available. '+(err.message||''),true);
+ }
+}
 async function activateUser(user){
  if(!user)return;
+ if(currentUser?.id===user.id&&current===user.id)return;
  currentUser=user;current=user.id;
  db=blank();
  document.getElementById('auth').classList.add('hidden');
@@ -676,6 +896,7 @@ async function activateUser(user){
  avatar.textContent=displayName.slice(0,1).toUpperCase();
  render();
  await loadCloudData();
+ await initializeAccountSecurity();
 }
 async function enterApp(){
  const {data:{session},error}=await supabaseClient.auth.getSession();
@@ -691,12 +912,62 @@ async function logout(){
  document.getElementById('authPassword').value='';
  setAuthMode('login');
 }
-supabaseClient.auth.onAuthStateChange((_event,session)=>{
+async function handleEmailAuthCallback(){
+ const params=new URLSearchParams(window.location.search);
+ const tokenHash=params.get('token_hash');
+ const type=params.get('type');
+ if(!tokenHash||!['email','recovery'].includes(type))return false;
+
+ const authPanel=document.getElementById('auth');
+ const appPanel=document.getElementById('app');
+ authPanel.classList.remove('hidden');
+ appPanel.classList.add('hidden');
+ setAuthMode('login');
+ const error=document.getElementById('authError');
+ error.style.color='var(--good)';
+ error.textContent=type==='recovery'?'Verifying your password reset link…':'Confirming your email address…';
+
+ try{
+  const {data,error:verifyError}=await supabaseClient.auth.verifyOtp({
+   token_hash:tokenHash,
+   type
+  });
+  if(verifyError)throw verifyError;
+  const cleanUrl=window.location.pathname+window.location.hash;
+  window.history.replaceState({},document.title,cleanUrl);
+  if(type==='email'){
+   if(!data.user)throw new Error('Email confirmation completed but no user session was returned. Please sign in.');
+   await activateUser(data.user);
+  }
+  return true;
+ }catch(err){
+  const cleanUrl=window.location.pathname+window.location.hash;
+  window.history.replaceState({},document.title,cleanUrl);
+  error.style.color='#d65b5b';
+  error.textContent=authErrorMessage(err);
+  return true;
+ }
+}
+
+supabaseClient.auth.onAuthStateChange((event,session)=>{
+ if(event==='PASSWORD_RECOVERY'){
+  setTimeout(()=>{
+   document.getElementById('app').classList.add('hidden');
+   document.getElementById('auth').classList.remove('hidden');
+   document.getElementById('passwordRecoveryPanel').classList.remove('hidden');
+   document.getElementById('passwordResetRequestForm').classList.add('hidden');
+   document.getElementById('passwordUpdateForm').classList.remove('hidden');
+   document.getElementById('passwordRecoveryTitle').textContent='Choose a new password';
+   document.getElementById('passwordRecoveryHelp').textContent='Enter and confirm your new password below.';
+   document.getElementById('passwordRecoveryMessage').textContent='';
+  },0);
+  return;
+ }
  if(session?.user&&!currentUser){setTimeout(()=>activateUser(session.user),0);}
  if(!session){current=null;currentUser=null;}
 });
 
-const titles={dashboard:['Overview','A clear view of what is happening in your business.'],products:['Products','Manage your products and services.'],orders:['Orders','Track sales and payment status.'],customers:['Customers','Build and maintain customer relationships.'],marketing:['Marketing','Prepare campaign briefs and content plans.'],finance:['Finance','Track recorded revenue and expenses.'],tools:['AI & OCR','Image upload and document notes.'],owner:['Owner area','Private platform administration.']};
+const titles={dashboard:['Overview','A clear view of what is happening in your business.'],products:['Products','Manage your products and services.'],orders:['Orders','Track sales and payment status.'],customers:['Customers','Build and maintain customer relationships.'],marketing:['Marketing','Prepare campaign briefs and content plans.'],finance:['Finance','Track recorded revenue and expenses.'],tools:['AI & OCR','Image upload and document notes.'],account:['Account & Devices','Manage your plan, trial and registered devices.'],owner:['Owner area','Private platform administration.']};
 function showPage(id){
  if(id==='owner'&&!['owner','admin'].includes(String(currentUser?.app_metadata?.role||'').toLowerCase())){alert('Owner access required.');return;}
  const next=document.getElementById(id);if(!next)return;
@@ -758,10 +1029,20 @@ async function addExpense(){
  }catch(err){setCloudStatus('Expense save failed: '+err.message,true);alert('Could not save expense: '+err.message);}
 }
 productForm.addEventListener('submit',productSubmit);
+productRows.addEventListener('click',e=>{
+ const button=e.target.closest('[data-action="delete-product"]');
+ if(!button||!productRows.contains(button))return;
+ const id=button.dataset.productId||'';
+ if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)){
+  setCloudStatus('Delete blocked: invalid product identifier.',true);
+  return;
+ }
+ removeProduct(id);
+});
 customerForm.addEventListener('submit',customerSubmit);
 orderForm.addEventListener('submit',orderSubmit);
 function render(){
- productRows.innerHTML=db.products.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.type)}</td><td>${money(p.price)}</td><td><button class="secondary" onclick="removeProduct('${String(p.id).replace(/'/g,'')}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="4" class="empty">No products added yet.</td></tr>';
+ productRows.innerHTML=db.products.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.type)}</td><td>${money(p.price)}</td><td><button type="button" class="secondary" data-action="delete-product" data-product-id="${esc(p.id)}">Delete</button></td></tr>`).join('')||'<tr><td colspan="4" class="empty">No products added yet.</td></tr>';
  oproduct.innerHTML=db.products.map(p=>`<option>${esc(p.name)}</option>`).join('')||'<option value="">Add a product first</option>';
  orderRows.innerHTML=db.orders.map(o=>`<tr><td>${esc(o.date)}</td><td>${esc(o.customer)}</td><td>${esc(o.item)}</td><td>${money(o.amount)}</td><td><span class="pill">${esc(o.status)}</span></td></tr>`).join('')||'<tr><td colspan="5" class="empty">No orders yet.</td></tr>';
  customerRows.innerHTML=db.customers.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.contact)}</td><td>${esc(c.date)}</td></tr>`).join('')||'<tr><td colspan="3" class="empty">No customers yet.</td></tr>';
@@ -794,6 +1075,7 @@ async function saveNote(){
  try{
   const {data,error}=await supabaseClient.from('ocr_notes').insert({user_id:currentUser.id,content}).select().single();
   if(error)throw error;
+  ocrNotesCloudAvailable=true;
   db.notes.unshift({id:data.id,text:data.content,date:data.created_at?new Date(data.created_at).toLocaleString():new Date().toLocaleString()});
   ocrtext.value='';render();alert('OCR note saved to Supabase Cloud.');
  }catch(err){
@@ -801,8 +1083,17 @@ async function saveNote(){
  }
 }
 function copyOCRText(){if(!ocrtext.value.trim())return alert('No text to copy yet.');navigator.clipboard?.writeText(ocrtext.value).then(()=>alert('OCR text copied.')).catch(()=>alert('Please select and copy the text.'))}
+function validateImageFile(file){
+ if(!file)return 'Choose an image first.';
+ const allowed=['image/jpeg','image/png','image/webp'];
+ if(!allowed.includes(file.type))return 'Unsupported image type. Use JPEG, PNG or WebP.';
+ if(file.size<=0)return 'The selected image is empty.';
+ if(file.size>10*1024*1024)return 'Image is too large. Maximum size is 10 MiB.';
+ return '';
+}
 async function runOCR(){
- const file=imageInput.files?.[0];if(!file)return alert('Choose an image first.');
+ const file=imageInput.files?.[0];
+ const validation=validateImageFile(file);if(validation)return alert(validation);
  if(!window.Tesseract)return alert('OCR library could not load. Check your internet connection and reload.');
  const btn=document.getElementById('runOcrBtn'),progress=document.getElementById('ocrProgress');
  btn.disabled=true;progress.textContent='Preparing OCR engine…';
@@ -819,7 +1110,7 @@ async function runOCR(){
 imageInput.addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;preview.src=URL.createObjectURL(f);preview.style.display='block';uploadStatus.textContent='Image selected. Ready to upload.'});
 async function uploadImage(){
  const file=imageInput.files?.[0];
- if(!file)return alert('Choose an image first.');
+ const validation=validateImageFile(file);if(validation){uploadStatus.textContent=validation;return;}
  if(!currentUser)return alert('Please sign in first.');
  const btn=document.getElementById('uploadImageBtn');
  const status=document.getElementById('uploadStatus');
@@ -893,6 +1184,15 @@ async function refreshAdminPanel(){
  document.getElementById('adminPanelStatus').textContent='Overview refreshed at '+new Date().toLocaleString();
 }
 
-if(current&&accounts[current])enterApp();else setAuthMode('signup');
+(async()=>{
+ const handled=await handleEmailAuthCallback();
+ if(!handled){
+  if(current&&accounts[current])await enterApp();
+  else setAuthMode('signup');
+ }
+})().catch(err=>{
+ const error=document.getElementById('authError');
+ if(error){error.style.color='#d65b5b';error.textContent=authErrorMessage(err);}
+});
 </script>
 </body></html>
