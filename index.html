@@ -912,6 +912,43 @@ async function logout(){
  document.getElementById('authPassword').value='';
  setAuthMode('login');
 }
+async function handleEmailAuthCallback(){
+ const params=new URLSearchParams(window.location.search);
+ const tokenHash=params.get('token_hash');
+ const type=params.get('type');
+ if(!tokenHash||!['email','recovery'].includes(type))return false;
+
+ const authPanel=document.getElementById('auth');
+ const appPanel=document.getElementById('app');
+ authPanel.classList.remove('hidden');
+ appPanel.classList.add('hidden');
+ setAuthMode('login');
+ const error=document.getElementById('authError');
+ error.style.color='var(--good)';
+ error.textContent=type==='recovery'?'Verifying your password reset link…':'Confirming your email address…';
+
+ try{
+  const {data,error:verifyError}=await supabaseClient.auth.verifyOtp({
+   token_hash:tokenHash,
+   type
+  });
+  if(verifyError)throw verifyError;
+  const cleanUrl=window.location.pathname+window.location.hash;
+  window.history.replaceState({},document.title,cleanUrl);
+  if(type==='email'){
+   if(!data.user)throw new Error('Email confirmation completed but no user session was returned. Please sign in.');
+   await activateUser(data.user);
+  }
+  return true;
+ }catch(err){
+  const cleanUrl=window.location.pathname+window.location.hash;
+  window.history.replaceState({},document.title,cleanUrl);
+  error.style.color='#d65b5b';
+  error.textContent=authErrorMessage(err);
+  return true;
+ }
+}
+
 supabaseClient.auth.onAuthStateChange((event,session)=>{
  if(event==='PASSWORD_RECOVERY'){
   setTimeout(()=>{
@@ -1147,6 +1184,15 @@ async function refreshAdminPanel(){
  document.getElementById('adminPanelStatus').textContent='Overview refreshed at '+new Date().toLocaleString();
 }
 
-if(current&&accounts[current])enterApp();else setAuthMode('signup');
+(async()=>{
+ const handled=await handleEmailAuthCallback();
+ if(!handled){
+  if(current&&accounts[current])await enterApp();
+  else setAuthMode('signup');
+ }
+})().catch(err=>{
+ const error=document.getElementById('authError');
+ if(error){error.style.color='#d65b5b';error.textContent=authErrorMessage(err);}
+});
 </script>
 </body></html>
