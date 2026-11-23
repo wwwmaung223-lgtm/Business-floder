@@ -1322,6 +1322,9 @@ function render(){
  recentOrders.innerHTML=db.orders.slice(0,5).map(o=>`<div class="listrow"><div><b>${esc(o.customer)}</b><div class="small">${esc(o.item)} · ${money(o.amount)} MMK</div></div><span class="pill">${esc(o.status)}</span></div>`).join('')||'<div class="empty">No orders yet.</div>';
  savedNotes.innerHTML=db.notes.map(n=>`<div class="listrow"><span>${esc(n.text.slice(0,110))}</span><span class="small">${esc(n.date)}</span></div>`).join('');
  
+
+renderAutomation();
+}
 function renderAutomation(){
  const pending=db.orders.filter(o=>String(o.status).toLowerCase()==='pending');
  const paid=db.orders.filter(o=>String(o.status).toLowerCase()==='paid');
@@ -1372,8 +1375,7 @@ document.getElementById('automationPendingList')?.addEventListener('click',event
  if(button.dataset.action==='print-invoice')printInvoice(id);
 });
 
-renderAutomation();
-}
+
 async function removeProduct(id){
  if(!currentUser)return;
  if(!confirm('Delete this product from your cloud workspace?'))return;
